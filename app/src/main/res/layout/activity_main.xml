@@ -49,18 +49,19 @@
         android:id="@+id/navLeftBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onLeftClick"
+        android:text="Left"
         app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption"
-        android:text="&lt;"
-        />
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
     <Button
+        android:id="@+id/navRightBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/navRightBtn"
-        app:layout_constraintTop_toTopOf="@id/navLeftBtn"
+        android:onClick="onRightClick"
+        android:text=">"
         app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
-        android:text="&gt;"
+        app:layout_constraintTop_toTopOf="@id/navLeftBtn" />
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -76,18 +77,20 @@
         android:id="@+id/btn_snap"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintRight_toRightOf="@id/btn_search"
-        app:layout_constraintBottom_toTopOf="@id/btn_search"
+        android:layout_marginTop="10dp"
+        android:onClick="onSnapClick"
+        app:layout_constraintLeft_toLeftOf="@id/btn_blog"
+        app:layout_constraintTop_toBottomOf="@id/btn_blog"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_search"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_margin="10dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="10dp"
+        android:onClick="onSearchClick"
+        app:layout_constraintLeft_toLeftOf="@id/btn_blog"
+        app:layout_constraintTop_toBottomOf="@id/btn_snap"
         app:srcCompat="@android:drawable/ic_menu_search" />
 
 
