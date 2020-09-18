@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
         app:layout_constraintTop_toBottomOf="@id/editImageCaption"
-        android:text="<"
+        android:text="&lt;"
         />
 
     <Button
@@ -60,41 +60,34 @@
         android:id="@+id/navRightBtn"
         app:layout_constraintTop_toTopOf="@id/navLeftBtn"
         app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
-        android:text=">"
+        android:text="&gt;"
         />
-
-    <Space
-        android:id="@+id/spacer_blog"
-        android:layout_width="350dp"
-        android:layout_height="500dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_blog"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        app:layout_constraintLeft_toRightOf="@id/spacer_blog"
-        app:layout_constraintTop_toBottomOf="@id/spacer_blog"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        />
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_snap"
+        app:layout_constraintRight_toRightOf="@id/btn_snap"
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_snap"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintLeft_toLeftOf="@id/btn_blog"
-        app:layout_constraintTop_toBottomOf="@id/btn_blog"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintRight_toRightOf="@id/btn_search"
+        app:layout_constraintBottom_toTopOf="@id/btn_search"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_search"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintLeft_toLeftOf="@id/btn_blog"
-        app:layout_constraintTop_toBottomOf="@id/btn_snap"
+        android:layout_margin="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@android:drawable/ic_menu_search" />
 
 
