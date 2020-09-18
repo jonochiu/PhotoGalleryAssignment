@@ -49,19 +49,19 @@
         android:id="@+id/navLeftBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onLeftClick"
+        android:text="Left"
         app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption"
-        android:text="<"
-        />
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
     <Button
+        android:id="@+id/navRightBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/navRightBtn"
-        app:layout_constraintTop_toTopOf="@id/navLeftBtn"
-        app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
+        android:onClick="onRightClick"
         android:text=">"
-        />
+        app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
+        app:layout_constraintTop_toTopOf="@id/navLeftBtn" />
 
     <Space
         android:id="@+id/spacer_blog"
@@ -84,6 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="78dp"
         android:layout_marginTop="10dp"
+        android:onClick="onSnapClick"
         app:layout_constraintLeft_toLeftOf="@id/btn_blog"
         app:layout_constraintTop_toBottomOf="@id/btn_blog"
         app:srcCompat="@android:drawable/ic_menu_camera" />
@@ -93,6 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="78dp"
         android:layout_marginTop="10dp"
+        android:onClick="onSearchClick"
         app:layout_constraintLeft_toLeftOf="@id/btn_blog"
         app:layout_constraintTop_toBottomOf="@id/btn_snap"
         app:srcCompat="@android:drawable/ic_menu_search" />
