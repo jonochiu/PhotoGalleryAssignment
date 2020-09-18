@@ -62,22 +62,16 @@
         android:text=">"
         app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
         app:layout_constraintTop_toTopOf="@id/navLeftBtn" />
-
-    <Space
-        android:id="@+id/spacer_blog"
-        android:layout_width="350dp"
-        android:layout_height="500dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_blog"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        app:layout_constraintLeft_toRightOf="@id/spacer_blog"
-        app:layout_constraintTop_toBottomOf="@id/spacer_blog"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        />
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_snap"
+        app:layout_constraintRight_toRightOf="@id/btn_snap"
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_snap"
