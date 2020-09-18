@@ -4,39 +4,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="193dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="128dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
+    <EditText
+        android:id="@+id/textStartTime"
+        android:layout_width="182dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Start Time"
+        android:inputType="time"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTime"
+        android:id="@+id/textTags"
         android:layout_width="182dp"
         android:layout_height="38dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="Tags"
         android:inputType="time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textStartTime" />
+
+    <EditText
+        android:id="@+id/textEndTime"
+        android:layout_width="182dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="End Time"
+        android:inputType="time"
+        app:layout_constraintStart_toEndOf="@+id/textStartTime"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Search"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTime" />
+        app:layout_constraintTop_toBottomOf="@+id/textTags" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
