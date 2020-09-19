@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PhotoGalleryAssignment</string>
+    <string name="galleryImage"></string>
 </resources>

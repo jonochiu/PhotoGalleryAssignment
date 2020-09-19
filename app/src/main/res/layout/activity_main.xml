@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -49,45 +50,65 @@
         android:id="@+id/navLeftBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onLeftClick"
+        android:text="Left"
         app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption"
-        android:text="&lt;"
-        />
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
     <Button
+        android:id="@+id/navRightBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/navRightBtn"
-        app:layout_constraintTop_toTopOf="@id/navLeftBtn"
+        android:onClick="onRightClick"
+        android:text=">"
         app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
-        android:text="&gt;"
+        app:layout_constraintTop_toTopOf="@id/navLeftBtn" /><![CDATA[
         />
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ]]>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_blog"
-        android:layout_width="wrap_content"
+        android:layout_width="56dp"
         android:layout_height="78dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@id/btn_snap"
-        app:layout_constraintRight_toRightOf="@id/btn_snap"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_search"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_upload" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_snap"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintRight_toRightOf="@id/btn_search"
-        app:layout_constraintBottom_toTopOf="@id/btn_search"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="onSnapClick"
+        app:layout_constraintBottom_toTopOf="@+id/btn_blog"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_search"
         android:layout_width="wrap_content"
         android:layout_height="78dp"
-        android:layout_margin="10dp"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="onSearchClick"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_search" />
 
 
