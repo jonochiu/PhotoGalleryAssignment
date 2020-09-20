@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onLeftClick"
-        android:text="Left"
+        android:text="&lt;"
         app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
         app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
@@ -60,24 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onRightClick"
-        android:text=">"
+        android:text="&gt;"
         app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
-        app:layout_constraintTop_toTopOf="@id/navLeftBtn" /><![CDATA[
-        />
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ]]>
+        app:layout_constraintTop_toTopOf="@id/navLeftBtn" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_blog"
