@@ -77,8 +77,12 @@ public class MainActivity extends AppCompatActivity {
         ImageView img = (ImageView) findViewById(R.id.galleryImage);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            img.setImageBitmap(imageBitmap);
+            if (extras != null) {
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                img.setImageBitmap(imageBitmap);
+            } else {
+                setImageGallery();
+            }
 
             String newPhotoFilepath = currentPhotoPath;
             PhotoEntry photoEntry = new PhotoEntry("", newPhotoFilepath, new Date());
