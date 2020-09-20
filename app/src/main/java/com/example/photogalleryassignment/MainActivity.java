@@ -24,11 +24,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        setImageGallery();
+        setImageGallery();
     }
 
     public void setImageGallery(){
         //Set image into image gallery
+        if (currentPhotoPath == null) {
+            return;
+        }
         ImageView imageView= (ImageView) findViewById(R.id.galleryImage);
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(currentPhotoPath);
@@ -53,19 +56,11 @@ public class MainActivity extends AppCompatActivity {
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
 
         Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
         imageView.setImageBitmap(bitmap);
     }
-    //On click function to provoke camera intent
-    public void onSnapClick(View view){
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
 
-    }
     //Handles image after capture from camera intent
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -98,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     }
     static final int REQUEST_TAKE_PHOTO = 1;
 
-    private void dispatchTakePictureIntent() {
+    public void onSnapClick(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -107,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
-
+                // Error occurred while creating the File, photoFile should still be null
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
