@@ -3,7 +3,9 @@ package com.example.photogalleryassignment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -12,19 +14,26 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentPhotoPath;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final String EXTRA_PHOTO_DATA = "EXTRA_PHOTO_DATA";
+    private String currentPhotoPath = null;
+    private SharedPreferences storage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setImageGallery();
+        storage = getApplicationContext().getSharedPreferences(EXTRA_PHOTO_DATA, Context.MODE_PRIVATE);
     }
 
     public void setImageGallery(){
@@ -71,6 +80,25 @@ public class MainActivity extends AppCompatActivity {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             img.setImageBitmap(imageBitmap);
 
+            String newPhotoFilepath = currentPhotoPath;
+            PhotoEntry photoEntry = new PhotoEntry("", newPhotoFilepath, new Date());
+            ((TextView)findViewById(R.id.imageTimestamp)).setText(photoEntry.getTimestamp().toString());
+            ((TextView)findViewById(R.id.editImageCaption)).setText(photoEntry.getCaption());
+            savePhotoEntry(photoEntry.getFilepath(), photoEntry.getCaption());
+        }
+    }
+
+    private void savePhotoEntry(String filepath, String caption) {
+        SharedPreferences.Editor editor = storage.edit();
+        editor.putString(filepath, caption);
+        editor.apply();
+    }
+
+    public void saveCaption(View view) {
+        String newCaption = (String) ((TextView)findViewById(R.id.editImageCaption)).getText().toString();
+        String savedCaption = storage.getString(currentPhotoPath, null);
+        if (savedCaption != null && !newCaption.equals(savedCaption)) {
+            savePhotoEntry(currentPhotoPath, newCaption);
         }
     }
 
@@ -91,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
-    static final int REQUEST_TAKE_PHOTO = 1;
 
     public void onSnapClick(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

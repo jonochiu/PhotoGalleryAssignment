@@ -11,28 +11,21 @@
         android:id="@+id/galleryImage"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_gravity="center_horizontal"
         android:contentDescription="Placeholder"
         android:src="@drawable/gallery_icon"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageTimestamp"
         app:layout_constraintTop_toBottomOf="@id/galleryImage"
-        app:layout_constraintLeft_toLeftOf="@id/galleryImage"
-        app:layout_constraintRight_toRightOf="@id/galleryImage"
-        android:text="Placeholder Timestamp"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageLocation"
-        app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/imageTimestamp"
-        android:text="Placeholder Location"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text=""
         />
 
     <EditText
@@ -41,19 +34,32 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textAutoComplete"
-        app:layout_constraintLeft_toLeftOf="@id/imageLocation"
-        app:layout_constraintTop_toBottomOf="@id/imageLocation"
-        android:text="Placeholder Caption"
+        app:layout_constraintTop_toBottomOf="@id/imageTimestamp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text=""
         />
 
+    <Button
+        android:id="@+id/savePhotoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="saveCaption"
+        android:text="Save"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
+    />
     <Button
         android:id="@+id/navLeftBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onLeftClick"
         android:text="&lt;"
-        app:layout_constraintLeft_toLeftOf="@id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
+        app:layout_constraintRight_toLeftOf="@id/savePhotoBtn"
+        app:layout_constraintTop_toTopOf="@id/savePhotoBtn"
+        app:layout_constraintBottom_toBottomOf="@id/savePhotoBtn"
+        />
 
     <Button
         android:id="@+id/navRightBtn"
@@ -61,8 +67,12 @@
         android:layout_height="wrap_content"
         android:onClick="onRightClick"
         android:text="&gt;"
-        app:layout_constraintLeft_toRightOf="@id/navLeftBtn"
-        app:layout_constraintTop_toTopOf="@id/navLeftBtn" />
+        app:layout_constraintLeft_toRightOf="@id/savePhotoBtn"
+        app:layout_constraintTop_toTopOf="@id/savePhotoBtn"
+        app:layout_constraintBottom_toBottomOf="@id/savePhotoBtn"
+        />
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_blog"
