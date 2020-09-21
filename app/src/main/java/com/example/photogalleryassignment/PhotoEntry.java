@@ -5,16 +5,32 @@ import androidx.annotation.Nullable;
 
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@AllArgsConstructor
 public class PhotoEntry {
 
-    @Setter
     private String caption;
     private String filepath;
     private Date timestamp;
+
+    public PhotoEntry(String cap, String fp, Date time) {
+        caption = cap;
+        filepath = fp;
+        timestamp = time;
+    }
+
+    public String getCaption(){
+        return caption;
+    }
+
+    public String getFilepath(){
+        return filepath;
+    }
+
+    public Date getTimestamp(){
+        return timestamp;
+    }
+
+    public void setCaption(String newCaption) {
+        caption = newCaption;
+    }
 }
