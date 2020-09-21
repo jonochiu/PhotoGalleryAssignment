@@ -27,6 +27,16 @@
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- dummy layout to prevent startDate from gaining focus after onCreate -->
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="@id/startDate"
+        app:layout_constraintLeft_toLeftOf="@id/startDate"
+        />
+
     <EditText
         android:id="@+id/startDate"
         android:layout_width="wrap_content"
@@ -52,37 +62,17 @@
         app:layout_constraintStart_toEndOf="@+id/startDate"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnStartDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Set Start"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startDate" />
-
-    <Button
-        android:id="@+id/btnEndDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginTop="16dp"
-        android:text="Set End"
-        app:layout_constraintStart_toEndOf="@+id/btnStartDate"
-        app:layout_constraintTop_toBottomOf="@+id/endDate" />
-
     <EditText
         android:id="@+id/textTags"
         android:layout_width="182dp"
         android:layout_height="38dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Tags"
         android:inputType="time"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStartDate" />
+        app:layout_constraintTop_toBottomOf="@id/startDate"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_editor_absoluteY="161dp" />
 
     <Button
         android:id="@+id/buttonSearch"
@@ -102,7 +92,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonSearch"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <ImageButton
         android:id="@+id/imageButton2"
@@ -112,17 +102,16 @@
         android:layout_marginTop="80dp"
         app:layout_constraintStart_toEndOf="@+id/imageButton1"
         app:layout_constraintTop_toBottomOf="@+id/textTags"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <ImageButton
         android:id="@+id/imageButton3"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="134dp"
         app:layout_constraintStart_toEndOf="@+id/imageButton2"
-        app:layout_constraintTop_toBottomOf="@+id/btnEndDate"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher"
+        tools:layout_editor_absoluteY="279dp" />
 
     <ImageButton
         android:id="@+id/imageButton4"
@@ -132,7 +121,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton1"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <ImageButton
         android:id="@+id/imageButton5"
@@ -142,7 +131,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toEndOf="@+id/imageButton4"
         app:layout_constraintTop_toBottomOf="@+id/imageButton2"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <ImageButton
         android:id="@+id/imageButton6"
@@ -152,7 +141,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toEndOf="@+id/imageButton5"
         app:layout_constraintTop_toBottomOf="@+id/imageButton3"
-        app:srcCompat="@drawable/gallery_icon" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
         android:id="@+id/btnPrevious"

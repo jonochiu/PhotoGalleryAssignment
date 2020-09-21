@@ -21,10 +21,37 @@ public class SearchActivity extends AppCompatActivity{
 
     private EditText startDateDispl;
     private EditText endDateDispl;
-    private Button btnStart;
-    private Button btnEnd;
     private DatePickerDialog.OnDateSetListener startDateListener;
     private DatePickerDialog.OnDateSetListener endDateListener;
+    private View.OnClickListener calendarClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            showCalendar();
+        }
+    };
+    private View.OnFocusChangeListener calendarChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (hasFocus) {
+                showCalendar();
+            }
+        }
+    };
+
+    private void showCalendar() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                SearchActivity.this,
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                startDateListener,
+                year,month,day);
+        dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
+        dialog.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,28 +61,9 @@ public class SearchActivity extends AppCompatActivity{
         startDateDispl = (EditText)findViewById(R.id.startDate);
         endDateDispl = (EditText)findViewById(R.id.endDate);
 
-        btnStart = (Button)findViewById(R.id.btnStartDate);
-        btnEnd = (Button)findViewById(R.id.btnEndDate);
-
         //Listener for setting startdate
-        btnStart.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               Calendar cal = Calendar.getInstance();
-               int year = cal.get(Calendar.YEAR);
-               int month = cal.get(Calendar.MONTH);
-               int day = cal.get(Calendar.DAY_OF_MONTH);
-
-               DatePickerDialog dialog = new DatePickerDialog(
-                       SearchActivity.this,
-                       android.R.style.Theme_Holo_Light_Dialog_MinWidth,
-                       startDateListener,
-                       year,month,day);
-               dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
-               dialog.show();
-           }
-        });
-
+        startDateDispl.setOnClickListener(calendarClickListener);
+        startDateDispl.setOnFocusChangeListener(calendarChangeListener);
         startDateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -66,24 +74,8 @@ public class SearchActivity extends AppCompatActivity{
         };
 
         //Listener for setting enddate
-        btnEnd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
-
-                DatePickerDialog dialog = new DatePickerDialog(
-                        SearchActivity.this,
-                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
-                        endDateListener,
-                        year,month,day);
-                dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
-                dialog.show();
-            }
-        });
-
+        endDateDispl.setOnClickListener(calendarClickListener);
+        endDateDispl.setOnFocusChangeListener(calendarChangeListener);
         endDateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -121,6 +113,7 @@ public class SearchActivity extends AppCompatActivity{
 //            } while (cur.moveToNext());
 //
 //        }
+
     }
 
 }
