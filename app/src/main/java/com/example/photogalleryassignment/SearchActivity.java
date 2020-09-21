@@ -1,46 +1,52 @@
 package com.example.photogalleryassignment;
 
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SearchActivity extends AppCompatActivity{
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class SearchActivity extends AppCompatActivity {
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-//        String[] projection = new String[] {
-//                MediaStore.Images.Media._ID,
-//                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-//                MediaStore.Images.Media.DATE_TAKEN
-//        };
-//        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-//        Cursor cur = getContentResolver().query(images, projection, null, null, null);
-//        Log.i("ListingImages"," query count=" + cur.getCount());
-//
-//        if (cur.moveToFirst()) {
-//            String bucket;
-//            String date;
-//            int bucketColumn = cur.getColumnIndex(
-//                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-//
-//            int dateColumn = cur.getColumnIndex(
-//                    MediaStore.Images.Media.DATE_TAKEN);
-//
-//            do {
-//                // Get the field values
-//                bucket = cur.getString(bucketColumn);
-//                date = cur.getString(dateColumn);
-//
-//                // Do something with the values.
-//                Log.i("ListingImages", " bucket=" + bucket
-//                        + "  date_taken=" + date);
-//            } while (cur.moveToNext());
-//
-//        }
+        try {
+            Calendar calendar = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd");
+            Date now = calendar.getTime();
+            String todayStr = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault()).format(now);
+            Date today = format.parse((String) todayStr);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            String tomorrowStr = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault()).format(calendar.getTime());
+            Date tomorrow = format.parse((String) tomorrowStr);
+            ((EditText) findViewById(R.id.etFromDateTime)).setText(new SimpleDateFormat( "yyyy‐MM‐ddHH:mm:ss", Locale.getDefault()).format(today));
+            ((EditText) findViewById(R.id.etToDateTime)).setText(new SimpleDateFormat( "yyyy‐MM‐ddHH:mm:ss", Locale.getDefault()).format(tomorrow));
+        } catch (Exception ex) { }
     }
 
+    public void go(final View v) {
+        Intent i = new Intent();
+        EditText from = (EditText) findViewById(R.id.etFromDateTime);
+        EditText to = (EditText) findViewById(R.id.etToDateTime);
+        EditText keywords = (EditText) findViewById(R.id.etKeywords);
+        i.putExtra("STARTTIMESTAMP", from.getText() != null ? from.getText().toString() : "");
+        i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
+        i.putExtra("KEYWORDS", keywords.getText() != null ?
+        keywords.getText().toString() : "");
+        setResult(RESULT_OK, i);
+        finish();
+    }
+
+    public void cancel(final View v) {
+        finish();
+    }
 }
