@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         EditText caption = (EditText) findViewById(R.id.editImageCaption);
 
         if (filepath == null || filepath.length() == 0) {
-            image.setImageResource(R.drawable.gallery_icon);
+            image.setImageResource(R.mipmap.ic_launcher_round);
             caption.setText("");
             timestamp.setText("");
         } else {
