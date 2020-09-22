@@ -2,6 +2,7 @@ package com.example.photogalleryassignment;
 
 import android.util.Log;
 
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -39,10 +40,14 @@ public class UITest {
 //        String strDate = dateFormat.format(date);
 
         onView(withId(R.id.btn_search)).perform(click());
+
+        //onView(withId(R.id.etFromDateTime)).perform(PickerActions.setDate(2020,9,21));
         onView(withId(R.id.etFromDateTime)).perform(typeText(""), closeSoftKeyboard());
         onView(withId(R.id.etToDateTime)).perform(typeText(""), closeSoftKeyboard());
+
         onView(withId(R.id.etKeywords)).perform(typeText("caption"), closeSoftKeyboard());
         onView(withId(R.id.go)).perform(click());
+
         onView(withId(R.id.editImageCaption)).check(matches(withText("caption")));
         onView(withId(R.id.navRightBtn)).perform(click());
         onView(withId(R.id.navLeftBtn)).perform(click());
