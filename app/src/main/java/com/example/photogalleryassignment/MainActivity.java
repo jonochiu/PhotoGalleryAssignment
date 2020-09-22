@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -37,13 +38,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int TIMESTAMP_INDEX = 2;
     private static final int SUFFIX_INDEX = 3;
     private static final int DEFAULT_DIMENS = 250;
-    private static final DateFormat displayFormat = new SimpleDateFormat("yyyy‐MM‐dd HH:mm:ss");
-    private static final DateFormat storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    public static DateFormat displayFormat;
+    private static DateFormat storedFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
         photos = findPhotos(new Date(Long.MIN_VALUE),new Date(),"");
         if (photos.size() == 0) {
@@ -166,8 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 startTimestamp = format.parse(from);
                 endTimestamp = format.parse(to);
             } catch (Exception e) {
-                startTimestamp = null;
-                endTimestamp = null;
+                throw new RuntimeException(e);
             }
             String keywords = (String) data.getStringExtra("KEYWORDS");
             index = 0;

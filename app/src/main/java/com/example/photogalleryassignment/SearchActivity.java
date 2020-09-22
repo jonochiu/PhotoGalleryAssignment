@@ -25,7 +25,7 @@ import java.util.Locale;
 public class SearchActivity extends AppCompatActivity {
 
     //Date Selector Code
-    private static final DateFormat displayFormat = new SimpleDateFormat( "yyyy‐MM‐dd HH:mm:ss", Locale.getDefault());
+    private static DateFormat displayFormat = MainActivity.displayFormat;
     private EditText startDateDispl;
     private EditText endDateDispl;
     private DatePickerDialog.OnDateSetListener startDateListener = new DatePickerDialog.OnDateSetListener() {
@@ -93,14 +93,14 @@ public class SearchActivity extends AppCompatActivity {
     }
     private void setDate(final EditText editText, int year, int month, int day) {
         month++;
-        final String date = String.format("%d-%02d-%02d", year, month, day);
+        final String date = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month, day);
         Calendar cal = dateStringToCalendar(editText.getText().toString());
         TimePickerDialog subDialog = new TimePickerDialog(
             editText.getContext(),
             new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hour, int min) {
-                    String datetime = String.format("%s %02d:%02d:00", date, hour, min);
+                    String datetime = String.format(Locale.getDefault(), "%s %02d:%02d:00", date, hour, min);
                     editText.setText(datetime);
                 }
             },
@@ -132,12 +132,12 @@ public class SearchActivity extends AppCompatActivity {
 
         try {
             Calendar calendar = Calendar.getInstance();
-            DateFormat format = new SimpleDateFormat("yyyy‐MM‐dd");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date now = calendar.getTime();
-            String todayStr = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault()).format(now);
+            String todayStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(now);
             Date today = format.parse((String) todayStr);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
-            String tomorrowStr = new SimpleDateFormat("yyyy‐MM‐dd", Locale.getDefault()).format(calendar.getTime());
+            String tomorrowStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
             Date tomorrow = format.parse((String) tomorrowStr);
             ((EditText) findViewById(R.id.etFromDateTime)).setText(displayFormat.format(today));
             ((EditText) findViewById(R.id.etToDateTime)).setText(displayFormat.format(tomorrow));
