@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int TIMESTAMP_INDEX = 2;
     private static final int SUFFIX_INDEX = 3;
     private static final int DEFAULT_DIMENS = 250;
-    private static final DateFormat displayFormat = new SimpleDateFormat("yyyy‐MM‐ddHH:mm:ss");
+    private static final DateFormat displayFormat = new SimpleDateFormat("yyyy‐MM‐dd HH:mm:ss");
     private static final DateFormat storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     @Override
