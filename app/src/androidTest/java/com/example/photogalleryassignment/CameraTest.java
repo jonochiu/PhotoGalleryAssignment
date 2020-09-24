@@ -36,7 +36,6 @@ public class CameraTest {
 
     @Test
     public void validateCameraScenario() {
-        //TODO fix bitmap
         Bitmap icon = BitmapFactory.decodeResource(
                 InstrumentationRegistry.getTargetContext().getResources(),
                 R.mipmap.ic_launcher);
