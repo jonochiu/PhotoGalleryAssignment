@@ -44,15 +44,37 @@ public class UITest {
         onView(withText("OK")).perform(click());
     }
 
+    private int getCurrentTime(int dateUnitElement) {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
+        String strDate = dateFormat.format(date);
+
+        String[] tokens = strDate.split("/");
+        int dateUnit = Integer.parseInt(tokens[dateUnitElement]);
+
+        return dateUnit;
+    }
+
     @Test
     public void testSearch() {
+
         onView(withId(R.id.btn_search)).perform(click());
 
         onView(withId(R.id.etFromDateTime)).perform(click());
-        setDatetime(2020, 9, 20, 0, 0);
+        setDatetime(
+                getCurrentTime(0),
+                getCurrentTime(1),
+                getCurrentTime(2),
+                getCurrentTime(3),
+                getCurrentTime(4));
 
         onView(withId(R.id.etToDateTime)).perform(click());
-        setDatetime(2020, 9, 23, 13, 0);
+        setDatetime(
+                getCurrentTime(0),
+                getCurrentTime(1),
+                getCurrentTime(2),
+                getCurrentTime(3),
+                getCurrentTime(4));
 
         onView(withId(R.id.etKeywords)).perform(typeText("caption"), closeSoftKeyboard());
 
