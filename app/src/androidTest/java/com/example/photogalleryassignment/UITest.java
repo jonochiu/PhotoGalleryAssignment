@@ -50,9 +50,8 @@ public class UITest {
         String strDate = dateFormat.format(date);
 
         String[] tokens = strDate.split("/");
-        int dateUnit = Integer.parseInt(tokens[dateUnitElement]);
 
-        return dateUnit;
+        return Integer.parseInt(tokens[dateUnitElement]);
     }
 
     @Test
@@ -68,6 +67,7 @@ public class UITest {
                 getCurrentTime(3),
                 getCurrentTime(4));
 
+
         onView(withId(R.id.etToDateTime)).perform(click());
         setDatetime(
                 getCurrentTime(0),
@@ -75,6 +75,7 @@ public class UITest {
                 getCurrentTime(2),
                 getCurrentTime(3),
                 getCurrentTime(4));
+
 
         onView(withId(R.id.etKeywords)).perform(typeText("caption"), closeSoftKeyboard());
 
