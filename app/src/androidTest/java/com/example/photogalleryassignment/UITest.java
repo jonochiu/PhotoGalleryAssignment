@@ -36,32 +36,27 @@ public class UITest {
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
+    private void setDatetime(int year, int month, int day, int hour, int minute) {
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(year,month,day));
+        onView(withText("OK")).perform(click());
+
+        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(hour, minute));
+        onView(withText("OK")).perform(click());
+    }
+
     @Test
     public void testSearch() {
-        // Code for testing dates
-//        Date date = Calendar.getInstance().getTime();
-//        DateFormat dateFormat = new SimpleDateFormat("yyyy‐MM‐ddHH:mm:ss");
-//        String strDate = dateFormat.format(date);
-
         onView(withId(R.id.btn_search)).perform(click());
 
         onView(withId(R.id.etFromDateTime)).perform(click());
+        setDatetime(2020, 9, 20, 0, 0);
 
-        onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-            .perform(PickerActions.setDate(2021,8,11));
-        onView(withText("OK")).perform(click());
+        onView(withId(R.id.etToDateTime)).perform(click());
+        setDatetime(2020, 9, 23, 13, 0);
 
-        onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(10, 35));
-        onView(withText("OK")).perform(click());
+        onView(withId(R.id.etKeywords)).perform(typeText("caption"), closeSoftKeyboard());
 
-//        onView(withId(R.id.etToDateTime)).perform(typeText(""), closeSoftKeyboard());
-
-//        onView(withId(R.id.etKeywords)).perform(typeText("caption"), closeSoftKeyboard());
-//        onView(withId(R.id.go)).perform(click());
-//
-//        onView(withId(R.id.editImageCaption)).check(matches(withText("caption")));
-//        onView(withId(R.id.navRightBtn)).perform(click());
-//        onView(withId(R.id.navLeftBtn)).perform(click());
+        onView(withId(R.id.go)).perform(click());
     }
 
 }
