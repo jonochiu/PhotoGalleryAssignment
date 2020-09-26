@@ -107,10 +107,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (filepath == null || filepath.length() == 0) {
             image.setImageResource(R.mipmap.ic_launcher_round);
+            image.setContentDescription("ic_launcher_round");
             caption.setText("");
             timestamp.setText("");
         } else {
             image.setImageBitmap(getOptimizedBitmap(filepath));
+            image.setContentDescription(filepath);
             String[] photoData = filepath.split(DELIMITER);
             caption.setText(photoData[CAPTION_INDEX]);
             String timestampTxt = photoData[TIMESTAMP_INDEX];
