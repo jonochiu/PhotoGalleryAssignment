@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -217,33 +218,50 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void getPhotoLocation(){
+    private void getPhotoLocation() {
+        Log.d("Photo", "getting location");
         final TextView longitudeText = (TextView) findViewById(R.id.longitudeDisplay);
         final TextView latitudeText = (TextView) findViewById(R.id.latitudeDisplay);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
+                        Log.d("Photo", Double.toString(location.getLatitude()));
                         if (location != null) {
+                            Log.d("Photo", "location found");
                             String longitude = Double.toString(location.getLongitude());
+                            Log.d("Photo", Double.toString(location.getLongitude()));
                             String latitude = Double.toString(location.getLatitude());
+                            Log.d("Photo", Double.toString(location.getLatitude()));
                             longitudeText.setText(longitude);
                             latitudeText.setText(latitude);
                         }
+
                     }
 
                 });
+        Log.d("Photo", "location complete");
     }
     private File createImageFile() throws IOException {
+        Log.d("Photo", "oncreating image");
         String timeStamp = storedFormat.format(new Date());
         getPhotoLocation();
         EditText longitude = (EditText)findViewById(R.id.longitudeDisplay);
         longitude.getText().toString();
         EditText latitude = (EditText)findViewById(R.id.latitudeDisplay);
         latitude.getText().toString();
-        // filepath format: /storage/...DELIMITERcaption>DELIMITERtimeStampDELIMITER.jpg
-        final String imageFileName = DELIMITER + "caption" + DELIMITER + timeStamp + DELIMITER + longitude + DELIMITER + latitude + DELIMITER;
+//         filepath format: /storage/...DELIMITERcaption>DELIMITERtimeStampDELIMITER.jpg
+        final String imageFileName = DELIMITER + "caption" + DELIMITER + timeStamp + DELIMITER;// + longitude + DELIMITER + latitude + DELIMITER;
 
 
 
@@ -260,14 +278,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSnapClick(View view) {
+        Log.d("Photo", "onsnapclick");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
+                Log.d("Photo", "creating image");
                 photoFile = createImageFile();
             } catch (IOException ex) {
+                Log.d("Photo", "error");
                 // Error occurred while creating the File, photoFile should still be null
             }
             // Continue only if the File was successfully created
