@@ -1,26 +1,32 @@
 package com.example.photogalleryassignment;
 
-import android.app.Activity;
+
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-
-import java.util.Calendar;
+import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SearchActivity extends AppCompatActivity{
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class SearchActivity extends AppCompatActivity {
+
+    //Date Selector Code
+    private static DateFormat displayFormat = MainActivity.displayFormat;
 
     private EditText startDateDispl;
     private EditText endDateDispl;
@@ -39,20 +45,25 @@ public class SearchActivity extends AppCompatActivity{
     private View.OnClickListener startCalendarClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            showCalendar(startDateListener);
+
+            showCalendar(startDateDispl, startDateListener);
+
         }
     };
     private View.OnClickListener endCalendarClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            showCalendar(endDateListener);
+
+            showCalendar(endDateDispl, endDateListener);
+
         }
     };
     private View.OnFocusChangeListener startCalendarChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             if (hasFocus) {
-                showCalendar(startDateListener);
+                showCalendar(startDateDispl, startDateListener);
+
             }
         }
     };
@@ -60,13 +71,23 @@ public class SearchActivity extends AppCompatActivity{
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             if (hasFocus) {
-                showCalendar(endDateListener);
+
+                showCalendar(endDateDispl,endDateListener);
             }
         }
     };
-
-    private void showCalendar(DatePickerDialog.OnDateSetListener dateSetListener) {
+    private Calendar dateStringToCalendar(String date) {
+        Date selectedDate = new Date();
+        try {
+            selectedDate = displayFormat.parse(date);
+        } catch (ParseException e) { }
         Calendar cal = Calendar.getInstance();
+        cal.setTime(selectedDate);
+        return cal;
+    }
+    private void showCalendar(EditText view, DatePickerDialog.OnDateSetListener dateSetListener) {
+        Calendar cal = dateStringToCalendar(view.getText().toString());
+
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -79,21 +100,38 @@ public class SearchActivity extends AppCompatActivity{
         dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
         dialog.show();
     }
-    private void setDate(EditText editText, int year, int month, int day) {
-        month = month+1;
-        String date = year+"-"+month+"-"+day;;
-        editText.setText(date);
+
+    private void setDate(final EditText editText, int year, int month, int day) {
+        month++;
+        final String date = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month, day);
+        Calendar cal = dateStringToCalendar(editText.getText().toString());
+        TimePickerDialog subDialog = new TimePickerDialog(
+            editText.getContext(),
+            new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hour, int min) {
+                    String datetime = String.format(Locale.getDefault(), "%s %02d:%02d:00", date, hour, min);
+                    editText.setText(datetime);
+                }
+            },
+            cal.get(Calendar.HOUR_OF_DAY),
+            cal.get(Calendar.MINUTE),
+            false
+        );
+        subDialog.show();
         //hide keyboard
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getApplicationWindowToken(), 0);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        startDateDispl = (EditText)findViewById(R.id.startDate);
-        endDateDispl = (EditText)findViewById(R.id.endDate);
+
+        startDateDispl = (EditText)findViewById(R.id.etFromDateTime);
+        endDateDispl = (EditText)findViewById(R.id.etToDateTime);
 
         //Listener for setting startdate
         startDateDispl.setOnClickListener(startCalendarClickListener);
@@ -103,36 +141,38 @@ public class SearchActivity extends AppCompatActivity{
         endDateDispl.setOnClickListener(endCalendarClickListener);
         endDateDispl.setOnFocusChangeListener(endCalendarChangeListener);
 
-//        String[] projection = new String[] {
-//                MediaStore.Images.Media._ID,
-//                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-//                MediaStore.Images.Media.DATE_TAKEN
-//        };
-//        Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-//        Cursor cur = getContentResolver().query(images, projection, null, null, null);
-//        Log.i("ListingImages"," query count=" + cur.getCount());
-//
-//        if (cur.moveToFirst()) {
-//            String bucket;
-//            String date;
-//            int bucketColumn = cur.getColumnIndex(
-//                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-//
-//            int dateColumn = cur.getColumnIndex(
-//                    MediaStore.Images.Media.DATE_TAKEN);
-//
-//            do {
-//                // Get the field values
-//                bucket = cur.getString(bucketColumn);
-//                date = cur.getString(dateColumn);
-//
-//                // Do something with the values.
-//                Log.i("ListingImages", " bucket=" + bucket
-//                        + "  date_taken=" + date);
-//            } while (cur.moveToNext());
-//
-//        }
+
+        try {
+            Calendar calendar = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date now = calendar.getTime();
+            String todayStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(now);
+            Date today = format.parse((String) todayStr);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            String tomorrowStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            Date tomorrow = format.parse((String) tomorrowStr);
+            ((EditText) findViewById(R.id.etFromDateTime)).setText(displayFormat.format(today));
+            ((EditText) findViewById(R.id.etToDateTime)).setText(displayFormat.format(tomorrow));
+        } catch (Exception ex) { }
 
     }
 
+    public void go(final View v) {
+        Intent i = new Intent();
+        EditText from = (EditText) findViewById(R.id.etFromDateTime);
+        EditText to = (EditText) findViewById(R.id.etToDateTime);
+        EditText keywords = (EditText) findViewById(R.id.etKeywords);
+        i.putExtra("STARTTIMESTAMP", from.getText() != null ? from.getText().toString() : "");
+        i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
+        i.putExtra("KEYWORDS", keywords.getText() != null ?
+        keywords.getText().toString() : "");
+//        i.putExtra("LONGITUDE", longitude.getText() != null ? longitude.getText().toString() : "" );
+//        i.putExtra("LATITUDE", latitude.getText() != null ? latitude.getText().toString() : "" );
+        setResult(RESULT_OK, i);
+        finish();
+    }
+
+    public void cancel(final View v) {
+        finish();
+    }
 }
