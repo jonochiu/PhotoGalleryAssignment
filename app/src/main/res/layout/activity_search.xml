@@ -1,56 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SearchActivity">
 
+    <TextView
+     android:id="@+id/tvFromDateTime" 
+     android:text="From: "
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignBottom="@+id/etFromDateTime"
+     android:layout_alignStart="@+id/btnCancel"
+     android:textSize="24sp" />
+    <LinearLayout
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:focusable="true"
+     android:focusableInTouchMode="true" />
     <EditText
-        android:id="@+id/textStartTime"
-        android:layout_width="182dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="Start Time"
-        android:inputType="time"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+     android:id="@+id/etFromDateTime"
+     android:inputType="date"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentEnd="true"
+     android:layout_alignParentTop="true"
+     android:layout_marginTop="38dp"
+     android:ems="10"
+     android:textSize="24sp" />
+    <TextView
+     android:id="@+id/tvToDateTime" 
+     android:text="To: "
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentTop="true"
+     android:layout_alignStart="@+id/tvFromDateTime"
+     android:layout_marginTop="98dp"
+     android:textSize="24sp" />
     <EditText
-        android:id="@+id/textTags"
-        android:layout_width="182dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="Tags"
-        android:inputType="time"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textStartTime" />
-
+     android:id="@+id/etToDateTime"
+     android:inputType="date"
+	 android:layout_width="wrap_content"
+	 android:layout_height="wrap_content"
+	 android:layout_alignBaseline="@+id/tvToDateTime"
+	 android:layout_alignParentEnd="true"
+	 android:layout_marginEnd="31dp"
+	 android:ems="10"
+	 android:textSize="24sp" />
+    <TextView
+     android:id="@+id/tvKeywords"
+     android:text="Keywords: "
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignStart="@+id/tvFromDateTime"
+     android:layout_centerVertical="true"
+     android:textSize="24sp" />
     <EditText
-        android:id="@+id/textEndTime"
-        android:layout_width="182dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="End Time"
-        android:inputType="time"
-        app:layout_constraintStart_toEndOf="@+id/textStartTime"
-        app:layout_constraintTop_toTopOf="parent" />
-
+     android:id="@+id/etKeywords"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignStart="@+id/go"
+     android:layout_centerVertical="true"
+     android:ems="10"
+     android:textSize="24sp" />
     <Button
-        android:id="@+id/buttonSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textTags" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+     android:id="@+id/btnCancel"
+     android:text="Cancel"
+     android:onClick="cancel"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_marginRight="55dp"
+     android:layout_marginEnd="55dp" />
+    <Button
+     android:id="@+id/go" 
+     android:onClick="go"
+     android:text="Go"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentEnd="true"
+     android:layout_alignTop="@+id/btnCancel"
+     android:layout_marginEnd="128dp" />
+</RelativeLayout>
