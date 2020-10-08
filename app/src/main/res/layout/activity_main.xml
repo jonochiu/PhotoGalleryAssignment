@@ -11,26 +11,28 @@
         android:id="@+id/longitudeDisplay"
         android:layout_width="130dp"
         android:layout_height="34dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="292dp"
+        android:layout_marginEnd="52dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Latitude"
+        android:text="0"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.657" />
 
     <EditText
         android:id="@+id/latitudeDisplay"
         android:layout_width="130dp"
         android:layout_height="34dp"
-        android:layout_marginBottom="292dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Longitude"
+        android:text="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/longitudeDisplay"
-        app:layout_constraintHorizontal_bias="0.471"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.657" />
 
     <ImageView
         android:id="@+id/galleryImage"
