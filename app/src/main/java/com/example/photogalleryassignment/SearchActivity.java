@@ -153,6 +153,8 @@ public class SearchActivity extends AppCompatActivity {
         i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
         i.putExtra("KEYWORDS", keywords.getText() != null ?
         keywords.getText().toString() : "");
+//        i.putExtra("LONGITUDE", longitude.getText() != null ? longitude.getText().toString() : "" );
+//        i.putExtra("LATITUDE", latitude.getText() != null ? latitude.getText().toString() : "" );
         setResult(RESULT_OK, i);
         finish();
     }
