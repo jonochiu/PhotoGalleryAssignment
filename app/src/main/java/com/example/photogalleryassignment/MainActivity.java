@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             displayPhoto(photos.get(index));
         }
     }
+
 
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
@@ -188,8 +190,11 @@ public class MainActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             String keywords = (String) data.getStringExtra("KEYWORDS");
+            String longitude = (String) data.getStringExtra("LONGITUDE");
+            String latitude = (String) data.getStringExtra("LATITUDE");
             index = 0;
-            photos = findPhotos(startTimestamp, endTimestamp, keywords);
+            photos = findPhotos(startTimestamp, endTimestamp, keywords //,longitude, latitude
+                    );
 
             displayPhoto(photos.size() == 0 ? null : photos.get(index));
         }
@@ -218,10 +223,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getPhotoLocation() {
+    private void getPhotoLocation() throws IOException {
         Log.d("Photo", "getting location");
         final TextView longitudeText = (TextView) findViewById(R.id.longitudeDisplay);
         final TextView latitudeText = (TextView) findViewById(R.id.latitudeDisplay);
+//        try {
+//            ExifInterface exif = new ExifInterface(currentPhotoPath);
+//            String lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+//            String lng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+//            longitudeText.setText(lat);
+//            latitudeText.setText(lng);
+//        } catch(IOException e){
+//            Log.d("Error", "EXIF Error");
+//        }
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -230,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+
         }
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -309,13 +324,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onBlogClick(View view){
         //twitter
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("twitter://user?screen_name=[user_name]"));
-            startActivity(intent);
-        } catch (Exception e) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://twitter.com/#!/[user_name]")));
-        }
+        Uri photo = Uri.parse(photos.get(index));
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photo);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
     }
 }
