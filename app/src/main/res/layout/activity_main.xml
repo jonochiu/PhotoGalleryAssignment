@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/longitudeDisplay"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="52dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.657" />
+
+    <EditText
+        android:id="@+id/latitudeDisplay"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/longitudeDisplay"
+        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.657" />
 
     <ImageView
         android:id="@+id/galleryImage"
@@ -15,18 +41,16 @@
         android:src="@mipmap/ic_launcher"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/imageTimestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageTimestamp"
-        app:layout_constraintTop_toBottomOf="@id/galleryImage"
+        android:text=""
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:text=""
-        />
+        app:layout_constraintTop_toBottomOf="@id/galleryImage" />
 
     <EditText
         android:id="@+id/editImageCaption"
@@ -34,11 +58,10 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textAutoComplete"
-        app:layout_constraintTop_toBottomOf="@id/imageTimestamp"
+        android:text=""
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:text=""
-        />
+        app:layout_constraintTop_toBottomOf="@id/imageTimestamp" />
 
     <Button
         android:id="@+id/savePhotoBtn"
@@ -48,8 +71,7 @@
         android:text="Save"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption"
-        />
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
     <Button
         android:id="@+id/navLeftBtn"
@@ -57,10 +79,9 @@
         android:layout_height="wrap_content"
         android:onClick="scrollPhotos"
         android:text="&lt;"
-        app:layout_constraintRight_toLeftOf="@id/savePhotoBtn"
-        app:layout_constraintTop_toTopOf="@id/savePhotoBtn"
         app:layout_constraintBottom_toBottomOf="@id/savePhotoBtn"
-        />
+        app:layout_constraintRight_toLeftOf="@id/savePhotoBtn"
+        app:layout_constraintTop_toTopOf="@id/savePhotoBtn" />
 
     <Button
         android:id="@+id/navRightBtn"
@@ -68,11 +89,9 @@
         android:layout_height="wrap_content"
         android:onClick="scrollPhotos"
         android:text="&gt;"
-        app:layout_constraintLeft_toRightOf="@id/savePhotoBtn"
-        app:layout_constraintTop_toTopOf="@id/savePhotoBtn"
         app:layout_constraintBottom_toBottomOf="@id/savePhotoBtn"
-        />
-
+        app:layout_constraintLeft_toRightOf="@id/savePhotoBtn"
+        app:layout_constraintTop_toTopOf="@id/savePhotoBtn" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,6 +100,7 @@
         android:layout_height="78dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:onClick="onBlogClick"
         app:layout_constraintBottom_toTopOf="@+id/btn_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_upload" />

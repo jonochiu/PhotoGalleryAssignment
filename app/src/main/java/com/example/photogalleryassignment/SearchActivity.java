@@ -1,5 +1,6 @@
 package com.example.photogalleryassignment;
 
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -26,6 +27,7 @@ public class SearchActivity extends AppCompatActivity {
 
     //Date Selector Code
     private static DateFormat displayFormat = MainActivity.displayFormat;
+
     private EditText startDateDispl;
     private EditText endDateDispl;
     private DatePickerDialog.OnDateSetListener startDateListener = new DatePickerDialog.OnDateSetListener() {
@@ -43,13 +45,17 @@ public class SearchActivity extends AppCompatActivity {
     private View.OnClickListener startCalendarClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
             showCalendar(startDateDispl, startDateListener);
+
         }
     };
     private View.OnClickListener endCalendarClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
             showCalendar(endDateDispl, endDateListener);
+
         }
     };
     private View.OnFocusChangeListener startCalendarChangeListener = new View.OnFocusChangeListener() {
@@ -57,6 +63,7 @@ public class SearchActivity extends AppCompatActivity {
         public void onFocusChange(View view, boolean hasFocus) {
             if (hasFocus) {
                 showCalendar(startDateDispl, startDateListener);
+
             }
         }
     };
@@ -64,6 +71,7 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             if (hasFocus) {
+
                 showCalendar(endDateDispl,endDateListener);
             }
         }
@@ -79,6 +87,7 @@ public class SearchActivity extends AppCompatActivity {
     }
     private void showCalendar(EditText view, DatePickerDialog.OnDateSetListener dateSetListener) {
         Calendar cal = dateStringToCalendar(view.getText().toString());
+
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -91,6 +100,7 @@ public class SearchActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
         dialog.show();
     }
+
     private void setDate(final EditText editText, int year, int month, int day) {
         month++;
         final String date = String.format(Locale.getDefault(), "%d-%02d-%02d", year, month, day);
@@ -119,6 +129,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+
         startDateDispl = (EditText)findViewById(R.id.etFromDateTime);
         endDateDispl = (EditText)findViewById(R.id.etToDateTime);
 
@@ -129,6 +140,7 @@ public class SearchActivity extends AppCompatActivity {
         //Listener for setting enddate
         endDateDispl.setOnClickListener(endCalendarClickListener);
         endDateDispl.setOnFocusChangeListener(endCalendarChangeListener);
+
 
         try {
             Calendar calendar = Calendar.getInstance();
@@ -142,6 +154,7 @@ public class SearchActivity extends AppCompatActivity {
             ((EditText) findViewById(R.id.etFromDateTime)).setText(displayFormat.format(today));
             ((EditText) findViewById(R.id.etToDateTime)).setText(displayFormat.format(tomorrow));
         } catch (Exception ex) { }
+
     }
 
     public void go(final View v) {
@@ -153,6 +166,8 @@ public class SearchActivity extends AppCompatActivity {
         i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
         i.putExtra("KEYWORDS", keywords.getText() != null ?
         keywords.getText().toString() : "");
+//        i.putExtra("LONGITUDE", longitude.getText() != null ? longitude.getText().toString() : "" );
+//        i.putExtra("LATITUDE", latitude.getText() != null ? latitude.getText().toString() : "" );
         setResult(RESULT_OK, i);
         finish();
     }

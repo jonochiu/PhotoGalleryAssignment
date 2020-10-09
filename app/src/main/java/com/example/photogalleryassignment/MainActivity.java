@@ -1,19 +1,30 @@
 package com.example.photogalleryassignment;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,15 +51,17 @@ public class MainActivity extends AppCompatActivity {
     private static final int DEFAULT_DIMENS = 250;
     public static DateFormat displayFormat;
     private static DateFormat storedFormat;
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
-        photos = findPhotos(new Date(Long.MIN_VALUE),new Date(),"");
+        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
@@ -58,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                 "/Android/data/" + getApplicationContext().getPackageName() +"/files/Pictures");
+                "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
         List<String> photos = new ArrayList<>();
         File[] fList = file.listFiles();
         if (fList != null) {
@@ -118,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
             String timestampTxt = photoData[TIMESTAMP_INDEX];
             try {
                 timestampTxt = displayFormat.format(storedFormat.parse(timestampTxt));
-            } catch (ParseException e) { }
+            } catch (ParseException e) {
+            }
             timestamp.setText(timestampTxt);
         }
     }
@@ -145,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.max(1, Math.min(photoW/targetW, photoH/targetH));
+        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -180,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             displayPhoto(photos.size() == 0 ? null : photos.get(index));
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            photos = findPhotos(new Date(Long.MIN_VALUE),new Date(),"");
+            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
             displayPhoto(currentPhotoPath);
         }
     }
@@ -196,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         //only make updates if caption has changed
         if (!data[CAPTION_INDEX].equals(caption)) {
             File from = new File(filepath);
-            File to = new File( data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + data[SUFFIX_INDEX]);
+            File to = new File(data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + data[SUFFIX_INDEX]);
             boolean success = from.renameTo(to);
             if (success) {
                 photos.set(index, to.getAbsolutePath());
@@ -204,11 +218,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private File createImageFile() throws IOException {
-        String timeStamp = storedFormat.format(new Date());
+    private void getPhotoLocation() {
+        Log.d("Photo", "getting location");
+        final TextView longitudeText = (TextView) findViewById(R.id.longitudeDisplay);
+        final TextView latitudeText = (TextView) findViewById(R.id.latitudeDisplay);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        Log.d("Photo", Double.toString(location.getLatitude()));
+                        if (location != null) {
+                            Log.d("Photo", "location found");
+                            String longitude = Double.toString(location.getLongitude());
+                            Log.d("Photo", Double.toString(location.getLongitude()));
+                            String latitude = Double.toString(location.getLatitude());
+                            Log.d("Photo", Double.toString(location.getLatitude()));
+                            longitudeText.setText(longitude);
+                            latitudeText.setText(latitude);
+                        }
 
-        // filepath format: /storage/...DELIMITERcaption>DELIMITERtimeStampDELIMITER.jpg
-        String imageFileName = DELIMITER + "caption" + DELIMITER + timeStamp + DELIMITER;
+                    }
+
+                });
+        Log.d("Photo", "location complete");
+    }
+    private File createImageFile() throws IOException {
+        Log.d("Photo", "oncreating image");
+        String timeStamp = storedFormat.format(new Date());
+        getPhotoLocation();
+        EditText longitude = (EditText)findViewById(R.id.longitudeDisplay);
+        longitude.getText().toString();
+        EditText latitude = (EditText)findViewById(R.id.latitudeDisplay);
+        latitude.getText().toString();
+//         filepath format: /storage/...DELIMITERcaption>DELIMITERtimeStampDELIMITER.jpg
+        final String imageFileName = DELIMITER + "caption" + DELIMITER + timeStamp + DELIMITER;// + longitude + DELIMITER + latitude + DELIMITER;
+
+
 
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
@@ -223,14 +278,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSnapClick(View view) {
+        Log.d("Photo", "onsnapclick");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
+                Log.d("Photo", "creating image");
                 photoFile = createImageFile();
             } catch (IOException ex) {
+                Log.d("Photo", "error");
                 // Error occurred while creating the File, photoFile should still be null
             }
             // Continue only if the File was successfully created
@@ -247,5 +305,17 @@ public class MainActivity extends AppCompatActivity {
     public void onSearchClick(View view){
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
+    public void onBlogClick(View view){
+        //twitter
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("twitter://user?screen_name=[user_name]"));
+            startActivity(intent);
+        } catch (Exception e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://twitter.com/#!/[user_name]")));
+        }
     }
 }
