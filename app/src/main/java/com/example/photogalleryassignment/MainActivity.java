@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -93,21 +94,17 @@ public class MainActivity extends AppCompatActivity {
         try {
             File imagePath = new File(photos.get(index));
             if(imagePath.delete()) {
-                System.out.println("Deleted the file: " + imagePath.getName());
+                Toast.makeText(getApplicationContext(), "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
                 photos.remove(index);
-
-                photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
                 if (photos.size() == 0) {
                     displayPhoto(null);
                 } else {
+                    index = 0;
                     displayPhoto(photos.get(index));
                 }
-
-            } else {
-                System.out.println("Failed to delete the file.");
             }
-        } catch (Exception e) {
-
+        } catch (Exception IndexOutOfBoundsException) {
+            Toast.makeText(getApplicationContext(), "No photos to delete", Toast.LENGTH_LONG).show();
         }
 
     }
