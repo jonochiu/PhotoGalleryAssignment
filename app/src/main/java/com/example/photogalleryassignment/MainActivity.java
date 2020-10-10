@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
@@ -88,6 +87,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return photos;
+    }
+
+    public void deletePhoto(View view) {
+        try {
+            File imagePath = new File(photos.get(index));
+            if(imagePath.delete()) {
+                System.out.println("Deleted the file: " + imagePath.getName());
+                photos.remove(index);
+
+                photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "");
+                if (photos.size() == 0) {
+                    displayPhoto(null);
+                } else {
+                    displayPhoto(photos.get(index));
+                }
+
+            } else {
+                System.out.println("Failed to delete the file.");
+            }
+        } catch (Exception e) {
+
+        }
+
     }
 
     public void scrollPhotos(View view) {
