@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                     displayPhoto(photos.get(index));
                 }
             }
-        } catch (Exception IndexOutOfBoundsException) {
+        } catch (Exception e) {
+            Log.e("MainActivity.deletePhoto","threw:",e);
             Toast.makeText(getApplicationContext(), "No photos to delete", Toast.LENGTH_LONG).show();
         }
 
