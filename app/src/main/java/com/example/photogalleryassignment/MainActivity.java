@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -70,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
@@ -88,6 +88,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return photos;
+    }
+
+    public void deletePhoto(View view) {
+        try {
+            File imagePath = new File(photos.get(index));
+            if(imagePath.delete()) {
+                Toast.makeText(getApplicationContext(), "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
+                photos.remove(index);
+                if (photos.size() == 0) {
+                    displayPhoto(null);
+                } else {
+                    index = 0;
+                    displayPhoto(photos.get(index));
+                }
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity.deletePhoto","threw:",e);
+            Toast.makeText(getApplicationContext(), "No photos to delete", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void scrollPhotos(View view) {
