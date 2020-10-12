@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private static DateFormat storedFormat;
     private FusedLocationProviderClient fusedLocationClient;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
             locationPermGranted = true;
         }
     }
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
     public static boolean locationPermGranted = false;
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -95,28 +96,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
-        List<String> photos = new ArrayList<>();
-        File[] fList = file.listFiles();
-        if (fList != null) {
-            for (File f : fList) {
-                boolean isUndated = startTimestamp == null && endTimestamp == null;
-                boolean isWithinDateRange = f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime();
-                boolean isKeywordEmpty = keywords == null;
-                boolean isKeywordMatch = f.getPath().contains(keywords);
-                boolean isLonLatEmpty = lon == 0 && lat == 0;
-                boolean isLonLatMatch = f.getPath().contains(lon + DELIMITER + lat);
-                if ((isUndated || isWithinDateRange) && (isKeywordEmpty || isKeywordMatch) && (isLonLatEmpty || isLonLatMatch)) {
-                    photos.add(f.getPath());
-                }
-            }
+    //Handles image after capture from camera intent
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
         }
-        return photos;
+        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
+            DateFormat format = displayFormat;
+            Date startTimestamp, endTimestamp;
+            int lon = data.getIntExtra("LONGITUDE", 0);
+            int lat = data.getIntExtra("LATITUDE", 0);
+            String from = (String) data.getStringExtra("STARTTIMESTAMP");
+            String to = (String) data.getStringExtra("ENDTIMESTAMP");
+            try {
+                startTimestamp = format.parse(from);
+                endTimestamp = format.parse(to);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            String keywords = (String) data.getStringExtra("KEYWORDS");
+            index = 0;
+            photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat);
+
+            displayPhoto(photos.size() == 0 ? null : photos.get(index));
+        }
+        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            String longitude = ((EditText)findViewById(R.id.longitudeDisplay)).getText().toString();
+            String latitude = ((EditText)findViewById(R.id.latitudeDisplay)).getText().toString();
+            //rename the new file to have lat lon value
+            currentPhotoPath = updatePhoto(currentPhotoPath, "caption", longitude, latitude);
+
+            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+            displayPhoto(currentPhotoPath);
+        }
     }
 
-    public void deletePhoto(View view) {
+    public void onDeletePhotoClick(View view) {
         try {
             File imagePath = new File(photos.get(index));
             if(imagePath.delete()) {
@@ -133,10 +150,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("DeletePhoto","threw:",e);
             Toast.makeText(getApplicationContext(), "No photos to delete", Toast.LENGTH_LONG).show();
         }
-
     }
 
-    public void scrollPhotos(View view) {
+    public void onScrollPhotosClick(View view) {
         if (photos.size() == 0) {
             return;
         }
@@ -158,6 +174,77 @@ public class MainActivity extends AppCompatActivity {
         if (index != oldIndex) {
             displayPhoto(photos.get(index));
         }
+    }
+
+    public void onSaveCaptionClick(View view) {
+        if (photos.size() > 0) {
+            String captions = ((EditText) findViewById(R.id.editImageCaption)).getText().toString();
+            String lon = ((EditText) findViewById(R.id.longitudeDisplay)).getText().toString();
+            String lat = ((EditText) findViewById(R.id.latitudeDisplay)).getText().toString();
+            updatePhoto(photos.get(index), captions, lon, lat);
+            Toast.makeText(getApplicationContext(), "File saved", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onSnapClick(View view) {
+        Log.d("Photo", "onsnapclick");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                Log.d("Photo", "creating image");
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.d("Photo", "error");
+                // Error occurred while creating the File, photoFile should still be null
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    public void onBlogClick(View view){
+        //twitter
+        Uri photo = Uri.parse(photos.get(index));
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photo);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
+    }
+
+    public void onSearchClick(View view){
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+    }
+
+    private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
+        List<String> photos = new ArrayList<>();
+        File[] fList = file.listFiles();
+        if (fList != null) {
+            for (File f : fList) {
+                boolean isUndated = startTimestamp == null && endTimestamp == null;
+                boolean isWithinDateRange = f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime();
+                boolean isKeywordEmpty = keywords == null;
+                boolean isKeywordMatch = f.getPath().contains(keywords);
+                boolean isLonLatEmpty = lon == 0 && lat == 0;
+                boolean isLonLatMatch = f.getPath().contains(lon + DELIMITER + lat);
+                if ((isUndated || isWithinDateRange) && (isKeywordEmpty || isKeywordMatch) && (isLonLatEmpty || isLonLatMatch)) {
+                    photos.add(f.getPath());
+                }
+            }
+        }
+        return photos;
     }
 
     private void displayPhoto(String filepath) {
@@ -226,53 +313,6 @@ public class MainActivity extends AppCompatActivity {
         return BitmapFactory.decodeFile(filepath, bmOptions);
     }
 
-    //Handles image after capture from camera intent
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
-            DateFormat format = displayFormat;
-            Date startTimestamp, endTimestamp;
-            int lon = data.getIntExtra("LONGITUDE", 0);
-            int lat = data.getIntExtra("LATITUDE", 0);
-            String from = (String) data.getStringExtra("STARTTIMESTAMP");
-            String to = (String) data.getStringExtra("ENDTIMESTAMP");
-            try {
-                startTimestamp = format.parse(from);
-                endTimestamp = format.parse(to);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            String keywords = (String) data.getStringExtra("KEYWORDS");
-            index = 0;
-            photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat);
-
-            displayPhoto(photos.size() == 0 ? null : photos.get(index));
-        }
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            String longitude = ((EditText)findViewById(R.id.longitudeDisplay)).getText().toString();
-            String latitude = ((EditText)findViewById(R.id.latitudeDisplay)).getText().toString();
-            //rename the new file to have lat lon value
-            currentPhotoPath = updatePhoto(currentPhotoPath, "caption", longitude, latitude);
-
-            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
-            displayPhoto(currentPhotoPath);
-        }
-    }
-
-    public void saveCaption(View view) {
-        if (photos.size() > 0) {
-            String captions = ((EditText) findViewById(R.id.editImageCaption)).getText().toString();
-            String lon = ((EditText) findViewById(R.id.longitudeDisplay)).getText().toString();
-            String lat = ((EditText) findViewById(R.id.latitudeDisplay)).getText().toString();
-            updatePhoto(photos.get(index), captions, lon, lat);
-            Toast.makeText(getApplicationContext(), "File saved", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
@@ -310,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("Photo", "location complete");
     }
+
     private File createImageFile() throws IOException {
         Log.d("Photo", "oncreating image");
         String timeStamp = storedFormat.format(new Date());
@@ -330,43 +371,4 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
-    public void onSnapClick(View view) {
-        Log.d("Photo", "onsnapclick");
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                Log.d("Photo", "creating image");
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Log.d("Photo", "error");
-                // Error occurred while creating the File, photoFile should still be null
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-    }
-
-    public void onSearchClick(View view){
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
-    }
-
-    public void onBlogClick(View view){
-        //twitter
-        Uri photo = Uri.parse(photos.get(index));
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, photo);
-        shareIntent.setType("image/*");
-        startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
-    }
 }
