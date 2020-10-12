@@ -8,27 +8,24 @@
 
     <EditText
         android:id="@+id/longitudeDisplay"
-        android:layout_width="130dp"
-        android:layout_height="34dp"
-        android:layout_marginEnd="52dp"
-        android:ems="10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="0"
-        app:layout_constraintTop_toBottomOf="@id/savePhotoBtn"
+        android:hint="longitude"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintVertical_bias="0.657" />
+        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
 
     <EditText
         android:id="@+id/latitudeDisplay"
-        android:layout_width="130dp"
-        android:layout_height="34dp"
-        android:ems="10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="0"
-        app:layout_constraintTop_toBottomOf="@id/savePhotoBtn"
+        android:hint="latitude"
+        app:layout_constraintTop_toBottomOf="@id/longitudeDisplay"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
-        app:layout_constraintVertical_bias="0.657" />
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
     <ImageView
         android:id="@+id/galleryImage"
@@ -53,9 +50,8 @@
         android:id="@+id/editImageCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:inputType="textAutoComplete"
-        android:text=""
+        android:hint="caption"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageTimestamp" />
@@ -68,7 +64,7 @@
         android:text="Save"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editImageCaption" />
+        app:layout_constraintTop_toBottomOf="@id/latitudeDisplay" />
 
     <Button
         android:id="@+id/navLeftBtn"
@@ -128,11 +124,11 @@
         android:id="@+id/btnDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:onClick="deletePhoto"
         android:text="delete"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latitudeDisplay" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/savePhotoBtn" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

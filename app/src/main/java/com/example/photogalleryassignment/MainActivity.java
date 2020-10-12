@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -68,6 +69,26 @@ public class MainActivity extends AppCompatActivity {
             displayPhoto(null);
         } else {
             displayPhoto(photos.get(index));
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= 23) { // Marshmallow
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+            //permission denied && SDK < 23, not sure wat to do in this case
+        } else {
+            locationPermGranted = true;
+        }
+    }
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
+
+    public static boolean locationPermGranted = false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationPermGranted = true;
+            }
         }
     }
 
@@ -210,8 +231,6 @@ public class MainActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             String keywords = (String) data.getStringExtra("KEYWORDS");
-            String longitude = (String) data.getStringExtra("LONGITUDE");
-            String latitude = (String) data.getStringExtra("LATITUDE");
             index = 0;
             photos = findPhotos(startTimestamp, endTimestamp, keywords //,longitude, latitude
                     );
@@ -243,48 +262,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getPhotoLocation() throws IOException {
+    @SuppressLint("MissingPermission")
+    private void getPhotoLocation() {
         Log.d("Photo", "getting location");
         final TextView longitudeText = (TextView) findViewById(R.id.longitudeDisplay);
         final TextView latitudeText = (TextView) findViewById(R.id.latitudeDisplay);
-//        try {
-//            ExifInterface exif = new ExifInterface(currentPhotoPath);
-//            String lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-//            String lng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-//            longitudeText.setText(lat);
-//            latitudeText.setText(lng);
-//        } catch(IOException e){
-//            Log.d("Error", "EXIF Error");
-//        }
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-        }
-        fusedLocationClient.getLastLocation()
+        if (locationPermGranted) {
+            fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
                     public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        Log.d("Photo", Double.toString(location.getLatitude()));
+                    // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             Log.d("Photo", "location found");
                             String longitude = Double.toString(location.getLongitude());
-                            Log.d("Photo", Double.toString(location.getLongitude()));
                             String latitude = Double.toString(location.getLatitude());
-                            Log.d("Photo", Double.toString(location.getLatitude()));
                             longitudeText.setText(longitude);
                             latitudeText.setText(latitude);
                         }
-
                     }
 
                 });
+        }
         Log.d("Photo", "location complete");
     }
     private File createImageFile() throws IOException {
