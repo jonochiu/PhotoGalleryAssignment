@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewMain{
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     public static DateFormat displayFormat;
     private static DateFormat storedFormat;
     private FusedLocationProviderClient fusedLocationClient;
-
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
+    public static boolean locationPermGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +86,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
-    public static boolean locationPermGranted = false;
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -133,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onDeletePhotoClick(View view) {
         try {
             File imagePath = new File(photos.get(index));
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onScrollPhotosClick(View view) {
         if (photos.size() == 0) {
             return;
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onSaveCaptionClick(View view) {
         if (photos.size() > 0) {
             String captions = ((EditText) findViewById(R.id.editImageCaption)).getText().toString();
@@ -186,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onSnapClick(View view) {
         Log.d("Photo", "onsnapclick");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -211,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     public void onBlogClick(View view){
         //twitter
         Uri photo = Uri.parse(photos.get(index));
@@ -221,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
     }
 
+    @Override
     public void onSearchClick(View view){
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
