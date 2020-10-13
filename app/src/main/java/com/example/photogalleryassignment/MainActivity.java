@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
+    //converted to ModelPhoto/ModelPhotoImpl
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
@@ -279,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         return photos;
     }
 
-    //converted
+    //converted to presentermain
     private void displayPhoto(String filepath) {
         ImageView image = (ImageView) findViewById(R.id.galleryImage);
         TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
@@ -316,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         }
     }
 
-    //converted
+    //converted to presentermain
     private Bitmap getOptimizedBitmap(String filepath) {
         //Set image into image gallery
         ImageView imageView = (ImageView) findViewById(R.id.galleryImage);
