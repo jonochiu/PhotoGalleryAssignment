@@ -43,32 +43,41 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
-    private String currentPhotoPath = null;
-    private List<String> photos = null;
-    private int index = 0;
+
     private static final String DELIMITER = "\r";//null char, impossible char to type on keyboard
     private static final int SYS_PATH_INDEX = 0;
-    private static final int CAPTION_INDEX = 1;
-    private static final int TIMESTAMP_INDEX = 2;
+    private static final int CAPTION_INDEX = 1;//
+    private static final int TIMESTAMP_INDEX = 2;//
+
     private static final int LON_INDEX = 3;
     private static final int LAT_INDEX = 4;
     //filename.split(delimiter) == 4 -> no lat lon
-    private static final int MISSING_LATLON = 4;
-    private static final int DEFAULT_DIMENS = 250;
-    public static DateFormat displayFormat;
-    private static DateFormat storedFormat;
+    private static final int MISSING_LATLON = 4;//
+    private static final int DEFAULT_DIMENS = 250;//
+
+    public static DateFormat displayFormat; //
+    private static DateFormat storedFormat; //
+
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
     public static boolean locationPermGranted = false;
+
+    private String currentPhotoPath = null;
+    private List<String> photos = null;
+    private int index = 0;
+
+    PresenterMain presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
+        //find photos on startup
         photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
         if (photos.size() == 0) {
             displayPhoto(null);
@@ -84,6 +93,10 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         } else {
             locationPermGranted = true;
         }
+
+        ModelPhoto model = new ModelPhotoImpl();
+        presenter = new PresenterMain(model);
+        presenter.bind(this);
     }
 
     @Override
@@ -133,11 +146,24 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     }
 
     @Override
+    protected void onDestroy() {
+        presenter.unbind();
+        super.onDestroy();
+    }
+
+    @Override
     public void onDeletePhotoClick(View view) {
+        ImageView image = (ImageView) findViewById(R.id.galleryImage);
+        TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
+        EditText caption = (EditText) findViewById(R.id.editImageCaption);
+        EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
+        EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
+        presenter.delete(photos, index, image, timestamp, caption, lat, lon);
+        /*
         try {
             File imagePath = new File(photos.get(index));
             if(imagePath.delete()) {
-                Toast.makeText(getApplicationContext(), "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
                 photos.remove(index);
                 if (photos.size() == 0) {
                     displayPhoto(null);
@@ -148,8 +174,9 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             }
         } catch (Exception e) {
             Log.e("DeletePhoto","threw:",e);
-            Toast.makeText(getApplicationContext(), "No photos to delete", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No photos to delete", Toast.LENGTH_LONG).show();
         }
+         */
     }
 
     @Override
@@ -252,12 +279,14 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         return photos;
     }
 
+    //converted
     private void displayPhoto(String filepath) {
         ImageView image = (ImageView) findViewById(R.id.galleryImage);
         TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
         EditText caption = (EditText) findViewById(R.id.editImageCaption);
         EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
         EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
+
 
         if (filepath == null || filepath.length() == 0) {
             image.setImageResource(R.mipmap.ic_launcher_round);
@@ -287,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         }
     }
 
+    //converted
     private Bitmap getOptimizedBitmap(String filepath) {
         //Set image into image gallery
         ImageView imageView = (ImageView) findViewById(R.id.galleryImage);
