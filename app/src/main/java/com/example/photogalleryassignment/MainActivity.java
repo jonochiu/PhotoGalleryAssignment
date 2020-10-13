@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             locationPermGranted = true;
         }
 
-        ModelPhoto model = new ModelPhotoImpl();
+        ModelPhoto model = new ModelPhotoImpl(this);
         presenter = new PresenterMain(model);
         presenter.bind(this);
     }
@@ -154,12 +154,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     //Added to presenter
     @Override
     public void onDeletePhotoClick(View view) {
-        ImageView image = (ImageView) findViewById(R.id.galleryImage);
-        TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
-        EditText caption = (EditText) findViewById(R.id.editImageCaption);
-        EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
-        EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
-        presenter.delete(photos, index, image, timestamp, caption, lat, lon);
+
+        presenter.delete(photos, index);
         /*
         try {
             File imagePath = new File(photos.get(index));
@@ -183,15 +179,9 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     //sorta broken presenter
     @Override
     public void onScrollPhotosClick(View view) {
-        ImageView image = (ImageView) findViewById(R.id.galleryImage);
-        TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
-        EditText caption = (EditText) findViewById(R.id.editImageCaption);
-        EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
-        EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
-
 
         //temporary until I move index and photos to presenter
-        index = presenter.scroll(view, index, photos, image, timestamp,caption,lat,lon);
+        index = presenter.scroll(view, index, photos);
         //left = 2131230967
         //right = 2131230968
         Toast.makeText(this, "id = " + view.getId(), Toast.LENGTH_SHORT).show();
@@ -377,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             photos.set(index, to.getAbsolutePath());
         }
         return success ? to.getAbsolutePath() : filepath;
-}
+    }
 
     @SuppressLint("MissingPermission")
     private void setLocationFieldsAsync() {

@@ -1,5 +1,6 @@
 package com.example.photogalleryassignment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -55,20 +56,23 @@ public class PresenterMain {
     }
 
     //Need to edit out List<string>photos and index out when i add array back in this class
-    public void delete(List<String> photos, int index, ImageView imageview, TextView timestamp,
-                       EditText caption, EditText lat, EditText lon) {
+    public void delete(List<String> photos, int index) {
         try {
+            //add code to access model to delete
             File imagePath = new File(photos.get(index));
             if(imagePath.delete()) {
                 Toast.makeText(view, "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
                 photos.remove(index);
                 if (photos.size() == 0) {
-                    displayPhoto(null, imageview, timestamp, caption, lat, lon);
+                    displayPhoto(null);
                 } else {
                     index = 0;
-                    displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
+                    displayPhoto(photos.get(index));
                 }
             }
+            //block to put into modelphotoimpl
+
+
         } catch (Exception e) {
             Log.e("DeletePhoto","threw:",e);
             Toast.makeText(view, "No photos to delete", Toast.LENGTH_LONG).show();
@@ -76,8 +80,7 @@ public class PresenterMain {
     }
 
     //change to void once it is switched over to using index and photos from presentermain instead of mainactivity
-    public int scroll(View view, int index, List<String> photos, ImageView imageview, TextView timestamp,
-                        EditText caption, EditText lat, EditText lon) {
+    public int scroll(View view, int index, List<String> photos) {
         if (photos.size() == 0) {
             return index; //fix here
         }
@@ -98,18 +101,17 @@ public class PresenterMain {
                 break;
         }
         if (index != oldIndex) {
-            displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
+            displayPhoto(photos.get(index));
         }
         return index; //fix here
     }
 
-    private void displayPhoto(String filepath, ImageView imageview, TextView timestamp,
-                              EditText caption, EditText lat, EditText lon) {
-        //ImageView image = (ImageView) findViewById(R.id.galleryImage);
-        //TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
-        //EditText caption = (EditText) findViewById(R.id.editImageCaption);
-        //EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
-        //EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
+    private void displayPhoto(String filepath) {
+        ImageView imageview = (ImageView) view.findViewById(R.id.galleryImage);
+        TextView timestamp = (TextView) view.findViewById(R.id.imageTimestamp);
+        EditText caption = (EditText) view.findViewById(R.id.editImageCaption);
+        EditText lat = (EditText) view.findViewById(R.id.latitudeDisplay);
+        EditText lon = (EditText) view.findViewById(R.id.longitudeDisplay);
 
         if (filepath == null || filepath.length() == 0) {
             imageview.setImageResource(R.mipmap.ic_launcher_round);
