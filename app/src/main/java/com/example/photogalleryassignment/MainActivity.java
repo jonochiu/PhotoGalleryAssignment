@@ -181,6 +181,13 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
 
     @Override
     public void onScrollPhotosClick(View view) {
+        ImageView image = (ImageView) findViewById(R.id.galleryImage);
+        TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
+        EditText caption = (EditText) findViewById(R.id.editImageCaption);
+        EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
+        EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
+        presenter.scroll(view, image, timestamp,caption,lat,lon);
+        /*
         if (photos.size() == 0) {
             return;
         }
@@ -202,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         if (index != oldIndex) {
             displayPhoto(photos.get(index));
         }
+        */
     }
 
     @Override

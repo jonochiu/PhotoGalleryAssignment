@@ -33,6 +33,9 @@ public class PresenterMain {
     //filename.split(delimiter) == 4 -> no lat lon
     private static final int MISSING_LATLON = 4;//
 
+    private List<String> photos;
+    private int index = 0;
+
     public PresenterMain(ModelPhoto model) {
         this.model = model;
     }
@@ -45,7 +48,8 @@ public class PresenterMain {
         view = null;
     }
 
-    public void delete(List<String> photos, int index, ImageView image, TextView timestamp,
+    //Need to edit out List<string>photos out when i add array back in this class
+    public void delete(List<String> photos, int index, ImageView imageview, TextView timestamp,
                        EditText caption, EditText lat, EditText lon) {
         try {
             File imagePath = new File(photos.get(index));
@@ -53,10 +57,10 @@ public class PresenterMain {
                 Toast.makeText(view, "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
                 photos.remove(index);
                 if (photos.size() == 0) {
-                    displayPhoto(null, image, timestamp, caption, lat, lon);
+                    displayPhoto(null, imageview, timestamp, caption, lat, lon);
                 } else {
                     index = 0;
-                    displayPhoto(photos.get(index), image, timestamp, caption, lat, lon);
+                    displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
                 }
             }
         } catch (Exception e) {
@@ -65,7 +69,32 @@ public class PresenterMain {
         }
     }
 
-    private void displayPhoto(String filepath, ImageView image, TextView timestamp,
+    public void scroll(View view, ImageView imageview, TextView timestamp,
+                        EditText caption, EditText lat, EditText lon) {
+        if (photos.size() == 0) {
+            return;
+        }
+        int oldIndex = index;
+        switch (view.getId()) {
+            case R.id.navLeftBtn:
+                if (index > 0) {
+                    index--;
+                }
+                break;
+            case R.id.navRightBtn:
+                if (index < (photos.size() - 1)) {
+                    index++;
+                }
+                break;
+            default:
+                break;
+        }
+        if (index != oldIndex) {
+            displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
+        }
+    }
+
+    private void displayPhoto(String filepath, ImageView imageview, TextView timestamp,
                               EditText caption, EditText lat, EditText lon) {
         //ImageView image = (ImageView) findViewById(R.id.galleryImage);
         //TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
@@ -74,15 +103,15 @@ public class PresenterMain {
         //EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
 
         if (filepath == null || filepath.length() == 0) {
-            image.setImageResource(R.mipmap.ic_launcher_round);
-            image.setContentDescription("ic_launcher_round");
+            imageview.setImageResource(R.mipmap.ic_launcher_round);
+            imageview.setContentDescription("ic_launcher_round");
             caption.setText("");
             timestamp.setText("");
             lat.setText("");
             lon.setText("");
         } else {
-            image.setImageBitmap(getOptimizedBitmap(filepath, image));
-            image.setContentDescription(filepath);
+            imageview.setImageBitmap(getOptimizedBitmap(filepath, imageview));
+            imageview.setContentDescription(filepath);
             String[] photoData = filepath.split(DELIMITER);
             caption.setText(photoData[CAPTION_INDEX]);
             String timestampTxt = photoData[TIMESTAMP_INDEX];
