@@ -15,7 +15,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class PresenterMain {
@@ -33,11 +36,14 @@ public class PresenterMain {
     //filename.split(delimiter) == 4 -> no lat lon
     private static final int MISSING_LATLON = 4;//
 
-    private List<String> photos;
-    private int index = 0;
+    //private List<String> photos;
+    //private int index = 0;
 
     public PresenterMain(ModelPhoto model) {
         this.model = model;
+        displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        //this.model.findPhotos(view, new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
     }
 
     public void bind(MainActivity view) {
@@ -69,12 +75,13 @@ public class PresenterMain {
         }
     }
 
-    public void scroll(View view, ImageView imageview, TextView timestamp,
+    public int scroll(View view, int index, List<String> photos, ImageView imageview, TextView timestamp,
                         EditText caption, EditText lat, EditText lon) {
         if (photos.size() == 0) {
-            return;
+            return index;
         }
         int oldIndex = index;
+        System.out.println(view.getId());
         switch (view.getId()) {
             case R.id.navLeftBtn:
                 if (index > 0) {
@@ -92,6 +99,7 @@ public class PresenterMain {
         if (index != oldIndex) {
             displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
         }
+        return index;
     }
 
     private void displayPhoto(String filepath, ImageView imageview, TextView timestamp,

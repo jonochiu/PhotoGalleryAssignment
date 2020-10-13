@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         super.onDestroy();
     }
 
+    //Added to presenter
     @Override
     public void onDeletePhotoClick(View view) {
         ImageView image = (ImageView) findViewById(R.id.galleryImage);
@@ -179,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
          */
     }
 
+    //sorta broken presenter
     @Override
     public void onScrollPhotosClick(View view) {
         ImageView image = (ImageView) findViewById(R.id.galleryImage);
@@ -186,7 +188,13 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         EditText caption = (EditText) findViewById(R.id.editImageCaption);
         EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
         EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
-        presenter.scroll(view, image, timestamp,caption,lat,lon);
+
+
+        //temporary until I move index and photos to presenter
+        index = presenter.scroll(view, index, photos, image, timestamp,caption,lat,lon);
+        //left = 2131230967
+        //right = 2131230968
+        Toast.makeText(this, "id = " + view.getId(), Toast.LENGTH_SHORT).show();
         /*
         if (photos.size() == 0) {
             return;
