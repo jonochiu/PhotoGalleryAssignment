@@ -54,7 +54,7 @@ public class PresenterMain {
         view = null;
     }
 
-    //Need to edit out List<string>photos out when i add array back in this class
+    //Need to edit out List<string>photos and index out when i add array back in this class
     public void delete(List<String> photos, int index, ImageView imageview, TextView timestamp,
                        EditText caption, EditText lat, EditText lon) {
         try {
@@ -75,10 +75,11 @@ public class PresenterMain {
         }
     }
 
+    //change to void once it is switched over to using index and photos from presentermain instead of mainactivity
     public int scroll(View view, int index, List<String> photos, ImageView imageview, TextView timestamp,
                         EditText caption, EditText lat, EditText lon) {
         if (photos.size() == 0) {
-            return index;
+            return index; //fix here
         }
         int oldIndex = index;
         System.out.println(view.getId());
@@ -99,7 +100,7 @@ public class PresenterMain {
         if (index != oldIndex) {
             displayPhoto(photos.get(index), imageview, timestamp, caption, lat, lon);
         }
-        return index;
+        return index; //fix here
     }
 
     private void displayPhoto(String filepath, ImageView imageview, TextView timestamp,
