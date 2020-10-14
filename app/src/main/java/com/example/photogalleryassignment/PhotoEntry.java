@@ -8,39 +8,59 @@ import androidx.annotation.Nullable;
 import java.util.Date;
 
 
-public class PhotoEntry {
-
+public class PhotoEntry implements Photo {
     private String caption;
     private String filepath;
     private Date timestamp;
-    private String longitude;
-    private String latitude;
+    private float longitude;
+    private float latitude;
 
-    public PhotoEntry(String cap, String fp, Date time, String photoLongitude, String photoLatitude) {
-        caption = cap;
+    public PhotoEntry(String fp) {
         filepath = fp;
-        timestamp = time;
-        longitude = photoLongitude;
-        latitude = photoLatitude;
     }
 
-    public String getCaption(){
+    @Override
+    public String getCaption() {
         return caption;
     }
 
-    public String getFilepath(){
+    @Override
+    public String getPath() {
         return filepath;
     }
 
-    public Date getTimestamp(){
+    @Override
+    public float getLongitude() {
+        return longitude;
+    }
+
+    @Override
+    public float getLatitude() {
+        return latitude;
+    }
+
+    @Override
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public String getLongitude() { return longitude;}
+    @Override
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
 
-    public String getLatitude() { return latitude;}
+    @Override
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    public void setCaption(String newCaption) {
-        caption = newCaption;
+    @Override
+    public void setLongitude(float lon) {
+        this.longitude = lon;
+    }
+
+    @Override
+    public void setLatitude(float lat) {
+        this.latitude = lat;
     }
 }
