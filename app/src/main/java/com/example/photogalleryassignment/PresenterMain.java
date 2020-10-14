@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 import android.view.View;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +36,8 @@ public class PresenterMain {
     MainActivity view;
     private ModelPhoto model;
 
+    private static final int REQUEST_TAKE_PHOTO = 1;
+
     private static final int DEFAULT_DIMENS = 250;
     private static final String DELIMITER = "\r";//null char, impossible char to type on keyboard
     private static final int CAPTION_INDEX = 1;//
@@ -49,6 +54,7 @@ public class PresenterMain {
 
     //private List<String> photos;
     //private int index = 0;
+
     private String currentPhotoPath = null;
 
     public PresenterMain(ModelPhoto model) {
@@ -184,6 +190,10 @@ public class PresenterMain {
         return BitmapFactory.decodeFile(filepath, bmOptions);
     }
 
+    public void setLocationPermGranted() {
+        locationPermGranted = true;
+    }
+
     @SuppressLint("MissingPermission")
     private void setLocationFieldsAsync() {
         Log.d("Photo", "getting location");
@@ -207,6 +217,57 @@ public class PresenterMain {
         }
         Log.d("Photo", "location complete");
     }
+
+    public void takePicture() {
+        Log.d("Photo", "onsnapclick");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(view.getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                Log.d("Photo", "creating image");
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.d("Photo", "error");
+                // Error occurred while creating the File, photoFile should still be null
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(view,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                view.startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    public void takePictureResponse() {
+        String longitude = ((EditText)view.findViewById(R.id.longitudeDisplay)).getText().toString();
+        String latitude = ((EditText)view.findViewById(R.id.latitudeDisplay)).getText().toString();
+        //rename the new file to have lat lon value
+        currentPhotoPath = updatePhoto(currentPhotoPath, "caption", longitude, latitude);
+
+        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+        displayPhoto(currentPhotoPath);
+    }
+
+    /*
+    private String updatePhoto(String filepath, String caption, String lon, String lat) {
+        //we dont care if the original photo had lat lon, we can add that info now
+        lon = lon.trim();
+        lat = lat.trim();
+        String[] data = filepath.split(DELIMITER);
+        File from = new File(filepath);
+        File to = new File(data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + lon + DELIMITER + lat+ DELIMITER + data[data.length-1]);
+        boolean success = from.renameTo(to);
+        if (success && photos.size() > 0) {
+            photos.set(index, to.getAbsolutePath());
+        }
+        return success ? to.getAbsolutePath() : filepath;
+    }
+     */
 
     private File createImageFile() throws IOException {
         Log.d("Photo", "oncreating image");

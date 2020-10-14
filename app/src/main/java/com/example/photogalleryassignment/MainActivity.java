@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //need to add this to presentermain
         displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
@@ -91,9 +91,11 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             }
             //permission denied && SDK < 23, not sure wat to do in this case
         } else {
-            locationPermGranted = true; //need function to set presentermain location tp trie
+            locationPermGranted = true; //need function to set presentermain location to true
+            //presenter.setLocationPermGranted();
         }
 
+        //move this stuff up later
         ModelPhoto model = new ModelPhotoImpl(this);
         presenter = new PresenterMain(model);
         presenter.bind(this);
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         }
     }
 
+    //to kill presenter when done
     @Override
     protected void onDestroy() {
         presenter.unbind();
@@ -176,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
          */
     }
 
-    //sorta broken presenter
+    //added to presenter
     @Override
     public void onScrollPhotosClick(View view) {
 
@@ -223,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
 
     @Override
     public void onSnapClick(View view) {
+        //presenter.takePicture();
+
         Log.d("Photo", "onsnapclick");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -245,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
+
     }
 
     @Override
@@ -355,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         return BitmapFactory.decodeFile(filepath, bmOptions);
     }
 
+    //not completely added
     private String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
