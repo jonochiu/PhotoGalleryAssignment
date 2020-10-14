@@ -1,5 +1,6 @@
 package com.example.photogalleryassignment;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
-        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+        photos = findPhotos(null, null, null, null, null);
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
+    private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, String lon, String lat) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
                 "/Android/data/" + getApplicationContext().getPackageName() + "/files/Pictures");
         List<String> photos = new ArrayList<>();
@@ -103,11 +104,11 @@ public class MainActivity extends AppCompatActivity {
         if (fList != null) {
             for (File f : fList) {
                 boolean isUndated = startTimestamp == null && endTimestamp == null;
-                boolean isWithinDateRange = f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime();
+                boolean isWithinDateRange = !isUndated && f.lastModified() >= startTimestamp.getTime() && f.lastModified() <= endTimestamp.getTime();
                 boolean isKeywordEmpty = keywords == null;
-                boolean isKeywordMatch = f.getPath().contains(keywords);
-                boolean isLonLatEmpty = lon == 0 && lat == 0;
-                boolean isLonLatMatch = f.getPath().contains(lon + DELIMITER + lat);
+                boolean isKeywordMatch = !isKeywordEmpty && f.getPath().contains(keywords);
+                boolean isLonLatEmpty = lon == null && lat == null;
+                boolean isLonLatMatch = !isLonLatEmpty && f.getPath().contains(lon + DELIMITER + lat);
                 if ((isUndated || isWithinDateRange) && (isKeywordEmpty || isKeywordMatch) && (isLonLatEmpty || isLonLatMatch)) {
                     photos.add(f.getPath());
                 }
@@ -236,17 +237,17 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             DateFormat format = displayFormat;
             Date startTimestamp, endTimestamp;
-            int lon = data.getIntExtra("LONGITUDE", 0);
-            int lat = data.getIntExtra("LATITUDE", 0);
-            String from = (String) data.getStringExtra("STARTTIMESTAMP");
-            String to = (String) data.getStringExtra("ENDTIMESTAMP");
+            String lon = data.getStringExtra("LONGITUDE");
+            String lat = data.getStringExtra("LATITUDE");
+            String from = data.getStringExtra("STARTTIMESTAMP");
+            String to = data.getStringExtra("ENDTIMESTAMP");
             try {
                 startTimestamp = format.parse(from);
                 endTimestamp = format.parse(to);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            String keywords = (String) data.getStringExtra("KEYWORDS");
+            String keywords = data.getStringExtra("KEYWORDS");
             index = 0;
             photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat);
 
@@ -258,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             //rename the new file to have lat lon value
             currentPhotoPath = updatePhoto(currentPhotoPath, "caption", longitude, latitude);
 
-            photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+            photos = findPhotos(null, null, null, null, null);
             displayPhoto(currentPhotoPath);
         }
     }
