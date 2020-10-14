@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             }
             //permission denied && SDK < 23, not sure wat to do in this case
         } else {
-            locationPermGranted = true;
+            locationPermGranted = true; //need function to set presentermain location tp trie
         }
 
         ModelPhoto model = new ModelPhotoImpl(this);
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) { //coming back from searchactivity
             DateFormat format = displayFormat;
             Date startTimestamp, endTimestamp;
             int lon = data.getIntExtra("LONGITUDE", 0);
@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             }
             String keywords = (String) data.getStringExtra("KEYWORDS");
             index = 0;
-            photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat);
+            photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat); //refresh with photos array with the searched photos
 
-            displayPhoto(photos.size() == 0 ? null : photos.get(index));
+            displayPhoto(photos.size() == 0 ? null : photos.get(index)); //display the first photo
         }
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE) { //Coming back after taking a picture
             String longitude = ((EditText)findViewById(R.id.longitudeDisplay)).getText().toString();
             String latitude = ((EditText)findViewById(R.id.latitudeDisplay)).getText().toString();
             //rename the new file to have lat lon value
@@ -369,6 +369,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         return success ? to.getAbsolutePath() : filepath;
     }
 
+    //converted not activated yet
     @SuppressLint("MissingPermission")
     private void setLocationFieldsAsync() {
         Log.d("Photo", "getting location");
@@ -393,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         Log.d("Photo", "location complete");
     }
 
+    //converted not activated yet
     private File createImageFile() throws IOException {
         Log.d("Photo", "oncreating image");
         String timeStamp = storedFormat.format(new Date());

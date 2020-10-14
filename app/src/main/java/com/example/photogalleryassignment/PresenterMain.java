@@ -1,10 +1,13 @@
 package com.example.photogalleryassignment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 import android.view.View;
@@ -13,7 +16,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,8 +44,12 @@ public class PresenterMain {
     //filename.split(delimiter) == 4 -> no lat lon
     private static final int MISSING_LATLON = 4;//
 
+    public static boolean locationPermGranted = false;
+    private FusedLocationProviderClient fusedLocationClient;
+
     //private List<String> photos;
     //private int index = 0;
+    private String currentPhotoPath = null;
 
     public PresenterMain(ModelPhoto model) {
         this.model = model;
@@ -121,7 +132,7 @@ public class PresenterMain {
             lat.setText("");
             lon.setText("");
         } else {
-            imageview.setImageBitmap(getOptimizedBitmap(filepath, imageview));
+            imageview.setImageBitmap(getOptimizedBitmap(filepath));
             imageview.setContentDescription(filepath);
             String[] photoData = filepath.split(DELIMITER);
             caption.setText(photoData[CAPTION_INDEX]);
@@ -141,9 +152,9 @@ public class PresenterMain {
         }
     }
 
-    private Bitmap getOptimizedBitmap(String filepath, ImageView imageView) {
+    private Bitmap getOptimizedBitmap(String filepath) {
         //Set image into image gallery
-        //ImageView imageView = (ImageView) findViewById(R.id.galleryImage);
+        ImageView imageView = (ImageView) view.findViewById(R.id.galleryImage);
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(filepath);
@@ -173,6 +184,48 @@ public class PresenterMain {
         return BitmapFactory.decodeFile(filepath, bmOptions);
     }
 
+    @SuppressLint("MissingPermission")
+    private void setLocationFieldsAsync() {
+        Log.d("Photo", "getting location");
+        final TextView longitudeText = (TextView) view.findViewById(R.id.longitudeDisplay);
+        final TextView latitudeText = (TextView) view.findViewById(R.id.latitudeDisplay);
+        if (locationPermGranted) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(view, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d("Photo", "location found");
+                                String longitude = Double.toString(location.getLongitude());
+                                String latitude = Double.toString(location.getLatitude());
+                                longitudeText.setText(longitude);
+                                latitudeText.setText(latitude);
+                            }
+                        }
+                    });
+        }
+        Log.d("Photo", "location complete");
+    }
 
+    private File createImageFile() throws IOException {
+        Log.d("Photo", "oncreating image");
+        String timeStamp = storedFormat.format(new Date());
+        // location data will not be ready before file is created, will need to rename
+        setLocationFieldsAsync();
+        // filepath format: /storage/...DELIMITERcaptionDELIMITERtimeStampDELIMITERsomegarbage.jpg
+        String imageFileName = DELIMITER + "caption" + DELIMITER + timeStamp + DELIMITER;
+
+        File storageDir = view.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
 
 }
