@@ -71,10 +71,6 @@ public class PresenterMain {
 
     public PresenterMain(ModelPhoto model) {
         this.model = model;
-        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(view); //need to add this to presentermain
-        //displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        //storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-        //this.model.findPhotos(view, new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
     }
 
     public void bind(MainActivity view) {
@@ -108,7 +104,7 @@ public class PresenterMain {
         }
     }
 
-    //Need to edit out List<string>photos and index out when i add array back in this class
+
     public void delete() {
         try {
             //add code to access model to delete
@@ -132,7 +128,6 @@ public class PresenterMain {
         }
     }
 
-    //change to void once it is switched over to using index and photos from presentermain instead of mainactivity
     public void scroll(View view) {
         if (photos.size() == 0) {
            // return index; //fix here
@@ -202,66 +197,6 @@ public class PresenterMain {
                 lat.setText(photoData[LAT_INDEX]);
             }
         }
-    }
-
-    private Bitmap getOptimizedBitmap(String filepath) {
-        //Set image into image gallery
-        ImageView imageView = (ImageView) view.findViewById(R.id.galleryImage);
-
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(filepath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        view.sendBroadcast(mediaScanIntent);
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-        targetW = targetW == 0 ? DEFAULT_DIMENS : targetW;
-        targetH = targetH == 0 ? DEFAULT_DIMENS : targetH;
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeFile(filepath, bmOptions);
-
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-
-        return BitmapFactory.decodeFile(filepath, bmOptions);
-    }
-
-    public void locPermGranted() {
-        locationPermGranted = true;
-    }
-
-    @SuppressLint("MissingPermission")
-    private void setLocationFieldsAsync() {
-        Log.d("Photo", "getting location");
-        final TextView longitudeText = (TextView) view.findViewById(R.id.longitudeDisplay);
-        final TextView latitudeText = (TextView) view.findViewById(R.id.latitudeDisplay);
-        if (locationPermGranted) {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(view, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                Log.d("Photo", "location found");
-                                String longitude = Double.toString(location.getLongitude());
-                                String latitude = Double.toString(location.getLatitude());
-                                longitudeText.setText(longitude);
-                                latitudeText.setText(latitude);
-                            }
-                        }
-                    });
-        }
-        Log.d("Photo", "location complete");
     }
 
     public void  saveCaption() {
@@ -335,6 +270,34 @@ public class PresenterMain {
         displayPhoto(photos.size() == 0 ? null : photos.get(index)); //display the first photo
     }
 
+    public void locPermGranted() {
+        locationPermGranted = true;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setLocationFieldsAsync() {
+        Log.d("Photo", "getting location");
+        final TextView longitudeText = (TextView) view.findViewById(R.id.longitudeDisplay);
+        final TextView latitudeText = (TextView) view.findViewById(R.id.latitudeDisplay);
+        if (locationPermGranted) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(view, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d("Photo", "location found");
+                                String longitude = Double.toString(location.getLongitude());
+                                String latitude = Double.toString(location.getLatitude());
+                                longitudeText.setText(longitude);
+                                latitudeText.setText(latitude);
+                            }
+                        }
+                    });
+        }
+        Log.d("Photo", "location complete");
+    }
+
     private String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
@@ -348,7 +311,6 @@ public class PresenterMain {
         }
         return success ? to.getAbsolutePath() : filepath;
     }
-
 
     private File createImageFile() throws IOException {
         Log.d("Photo", "oncreating image");
@@ -370,4 +332,39 @@ public class PresenterMain {
         return image;
     }
 
+    private Bitmap getOptimizedBitmap(String filepath) {
+        //Set image into image gallery
+        ImageView imageView = (ImageView) view.findViewById(R.id.galleryImage);
+
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(filepath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        view.sendBroadcast(mediaScanIntent);
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+        targetW = targetW == 0 ? DEFAULT_DIMENS : targetW;
+        targetH = targetH == 0 ? DEFAULT_DIMENS : targetH;
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(filepath, bmOptions);
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+
+        return BitmapFactory.decodeFile(filepath, bmOptions);
+    }
+
+    public DateFormat getDisplayFormat() {
+        return displayFormat;
+    }
 }

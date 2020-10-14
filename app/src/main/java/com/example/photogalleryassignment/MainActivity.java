@@ -41,7 +41,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ViewMain{
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    //private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
 
     private static final String DELIMITER = "\r";//null char, impossible char to type on keyboard
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     //private List<String> photos = null;
     //private int index = 0;
 
-    PresenterMain presenter;
+    public static PresenterMain presenter;
 
     //added presenter
     @Override
@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
          */
     }
 
+
+    /*
     //converted to ModelPhoto/ModelPhotoImpl
     private List<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
@@ -384,8 +386,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         return BitmapFactory.decodeFile(filepath, bmOptions);
     }
 
-    //not completely added
-    /*
+    //converted to presentermain
     private String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
@@ -399,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         }
         return success ? to.getAbsolutePath() : filepath;
     }
-     */
 
-    //converted not activated yet
+
+    //converted to presentermain
     @SuppressLint("MissingPermission")
     private void setLocationFieldsAsync() {
         Log.d("Photo", "getting location");
@@ -426,6 +427,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         Log.d("Photo", "location complete");
     }
 
+
     //converted not activated yet
     private File createImageFile() throws IOException {
         Log.d("Photo", "oncreating image");
@@ -437,14 +439,14 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
 
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,      //prefix
+                ".jpg",             //suffix
+                storageDir          //directory
         );
 
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
+    */
 }

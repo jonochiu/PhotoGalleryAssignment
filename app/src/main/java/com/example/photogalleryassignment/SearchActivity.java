@@ -26,7 +26,7 @@ import java.util.Locale;
 public class SearchActivity extends AppCompatActivity {
 
     //Date Selector Code
-    private static DateFormat displayFormat = MainActivity.displayFormat;
+    private static DateFormat displayFormat = MainActivity.presenter.getDisplayFormat();
 
     private EditText startDateDispl;
     private EditText endDateDispl;
@@ -153,6 +153,8 @@ public class SearchActivity extends AppCompatActivity {
             Date tomorrow = format.parse((String) tomorrowStr);
             ((EditText) findViewById(R.id.etFromDateTime)).setText(displayFormat.format(today));
             ((EditText) findViewById(R.id.etToDateTime)).setText(displayFormat.format(tomorrow));
+
+
         } catch (Exception ex) { }
 
     }
