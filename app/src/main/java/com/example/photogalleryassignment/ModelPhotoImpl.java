@@ -16,9 +16,10 @@ public class ModelPhotoImpl implements ModelPhoto{
     private static final int SYS_PATH_INDEX = 0;
     private static final int TIMESTAMP_INDEX = 2;//
 
-    List<String> photos;
-    int index;
+    //List<String> photos;
+    //int index;
 
+    /*
     public ModelPhotoImpl(MainActivity view) {
         photos = findPhotos(view ,new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
         index = 0;
@@ -39,6 +40,7 @@ public class ModelPhotoImpl implements ModelPhoto{
     public int getIndex() {
         return index;
     }
+     */
 
     public List<String> findPhotos(MainActivity view, Date startTimestamp, Date endTimestamp, String keywords, int lon, int lat) {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
@@ -61,6 +63,7 @@ public class ModelPhotoImpl implements ModelPhoto{
         return photos;
     }
 
+    /*
     public String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
@@ -74,5 +77,5 @@ public class ModelPhotoImpl implements ModelPhoto{
         }
         return success ? to.getAbsolutePath() : filepath;
     }
-
+    */
 }

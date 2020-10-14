@@ -41,7 +41,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ViewMain{
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_TAKE_PHOTO = 1;
+    //private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
 
     private static final String DELIMITER = "\r";//null char, impossible char to type on keyboard
@@ -63,22 +63,30 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     public static boolean locationPermGranted = false;
 
     private String currentPhotoPath = null;
-    private List<String> photos = null;
-    private int index = 0;
+    //private List<String> photos = null;
+    //private int index = 0;
 
     PresenterMain presenter;
 
+    //added presenter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //need to add this to presentermain
-        displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        //move this stuff up later
+        //ModelPhoto model = new ModelPhotoImpl(this);
+        ModelPhoto model = new ModelPhotoImpl();
+        presenter = new PresenterMain(model);
+        presenter.bind(this);
+        presenter.ready();
 
-        //find photos on startup
-        photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+        //fusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //need to add this to presentermain
+        //displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        //storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        //photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
+
+        /*
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
@@ -94,18 +102,16 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             locationPermGranted = true; //need function to set presentermain location to true
             //presenter.setLocationPermGranted();
         }
+        */
 
-        //move this stuff up later
-        ModelPhoto model = new ModelPhotoImpl(this);
-        presenter = new PresenterMain(model);
-        presenter.bind(this);
     }
 
+    //Added presenter
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationPermGranted = true;
+                presenter.locPermGranted();
             }
         }
     }
@@ -118,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             return;
         }
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) { //coming back from searchactivity
+            presenter.searchResponse(data);
+            /*
             DateFormat format = displayFormat;
             Date startTimestamp, endTimestamp;
             int lon = data.getIntExtra("LONGITUDE", 0);
@@ -135,8 +143,11 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             photos = findPhotos(startTimestamp, endTimestamp, keywords, lon, lat); //refresh with photos array with the searched photos
 
             displayPhoto(photos.size() == 0 ? null : photos.get(index)); //display the first photo
+             */
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE) { //Coming back after taking a picture
+            presenter.takePictureResponse();
+            /*
             String longitude = ((EditText)findViewById(R.id.longitudeDisplay)).getText().toString();
             String latitude = ((EditText)findViewById(R.id.latitudeDisplay)).getText().toString();
             //rename the new file to have lat lon value
@@ -144,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
 
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
             displayPhoto(currentPhotoPath);
+             */
         }
     }
 
@@ -158,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     @Override
     public void onDeletePhotoClick(View view) {
 
-        presenter.delete(photos, index);
+        presenter.delete();
         /*
         try {
             File imagePath = new File(photos.get(index));
@@ -184,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     public void onScrollPhotosClick(View view) {
 
         //temporary until I move index and photos to presenter
-        index = presenter.scroll(view, index, photos);
+        presenter.scroll(view);
         //left = 2131230967
         //right = 2131230968
         Toast.makeText(this, "id = " + view.getId(), Toast.LENGTH_SHORT).show();
@@ -215,6 +227,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
 
     @Override
     public void onSaveCaptionClick(View view) {
+        presenter.saveCaption();
+        /*
         if (photos.size() > 0) {
             String captions = ((EditText) findViewById(R.id.editImageCaption)).getText().toString();
             String lon = ((EditText) findViewById(R.id.longitudeDisplay)).getText().toString();
@@ -222,12 +236,14 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             updatePhoto(photos.get(index), captions, lon, lat);
             Toast.makeText(getApplicationContext(), "File saved", Toast.LENGTH_SHORT).show();
         }
+         */
     }
 
     @Override
     public void onSnapClick(View view) {
-        //presenter.takePicture();
+        presenter.takePicture();
 
+        /*
         Log.d("Photo", "onsnapclick");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -250,11 +266,13 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
-
+        */
     }
 
     @Override
     public void onBlogClick(View view){
+        presenter.blog();
+        /*
         //twitter
         Uri photo = Uri.parse(photos.get(index));
         Intent shareIntent = new Intent();
@@ -262,12 +280,17 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         shareIntent.putExtra(Intent.EXTRA_STREAM, photo);
         shareIntent.setType("image/*");
         startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
+         */
     }
 
     @Override
     public void onSearchClick(View view){
+        presenter.search();
+        /*
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_ACTIVITY_REQUEST_CODE);
+
+         */
     }
 
     //converted to ModelPhoto/ModelPhotoImpl
@@ -362,6 +385,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
     }
 
     //not completely added
+    /*
     private String updatePhoto(String filepath, String caption, String lon, String lat) {
         //we dont care if the original photo had lat lon, we can add that info now
         lon = lon.trim();
@@ -375,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         }
         return success ? to.getAbsolutePath() : filepath;
     }
+     */
 
     //converted not activated yet
     @SuppressLint("MissingPermission")
