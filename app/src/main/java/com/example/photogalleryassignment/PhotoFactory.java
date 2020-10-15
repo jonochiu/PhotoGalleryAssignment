@@ -38,6 +38,12 @@ public class PhotoFactory {
     private static final int LAT_INDEX = 4;
     private static final int MISSING_LATLON = 4;
     private static DateFormat storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+  
+    private String PACKNAME;
+
+    public PhotoFactory(String packname) {
+        PACKNAME = packname;
+    }
 
     @SuppressLint("NewApi")
     private <T1> T1 firstOrDefault(Stream<T1> items, T1 defaultValue, Predicate<T1> predicate) {
@@ -65,7 +71,7 @@ public class PhotoFactory {
 
     public List<Photo> getPhotos() {
         File[] fList = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-                "/Android/data/" + MainActivity.PACKAGE_NAME + "/files/Pictures").listFiles();
+                "/Android/data/" + PACKNAME + "/files/Pictures").listFiles();
         List<Photo> photos = new ArrayList<>();
         if (fList != null) {
             for (File f : fList) {
