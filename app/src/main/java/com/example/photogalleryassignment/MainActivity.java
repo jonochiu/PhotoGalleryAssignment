@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         presenter.ready();
     }
 
-    //Added presenter
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

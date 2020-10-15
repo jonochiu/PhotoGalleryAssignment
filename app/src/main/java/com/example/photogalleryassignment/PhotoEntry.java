@@ -17,8 +17,6 @@ public class PhotoEntry implements Photo {
     private float longitude;
     private float latitude;
 
-
-
     public PhotoEntry(String fp, String ap) {
         filepath = fp;
         absolutePath = ap;

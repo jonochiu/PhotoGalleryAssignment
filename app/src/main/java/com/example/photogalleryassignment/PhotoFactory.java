@@ -38,6 +38,7 @@ public class PhotoFactory {
     private static final int LAT_INDEX = 4;
     private static final int MISSING_LATLON = 4;
     private static DateFormat storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+  
     private String PACKNAME;
 
     public PhotoFactory(String packname) {
