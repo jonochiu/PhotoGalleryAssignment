@@ -68,10 +68,10 @@ public class PhotoFactory {
         List<Photo> photos = new ArrayList<>();
         if (fList != null) {
             for (File f : fList) {
-                Photo photo = new PhotoEntry(f.getPath());
+                Photo photo = new PhotoEntry(f.getPath(), f.getAbsolutePath());
                 String[] seg = f.getName().split(DELIMITER);
                 try {
-                    photo.setTimestamp(storedFormat.parse( seg[TIMESTAMP_INDEX]));
+                    photo.setTimestamp(storedFormat.parse(seg[TIMESTAMP_INDEX]));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -79,8 +79,7 @@ public class PhotoFactory {
                 try {
                     photo.setLongitude(Float.parseFloat(seg[LON_INDEX]));
                     photo.setLatitude(Float.parseFloat(seg[LAT_INDEX]));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // Index out of boundary, no lon/lat
                 }
                 photos.add(photo);

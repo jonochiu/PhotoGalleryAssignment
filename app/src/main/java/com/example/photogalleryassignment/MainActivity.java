@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
-    private String currentPhotoPath = null;
+    private Photo currentPhoto = null;
     private List<Photo> photos = null;
     private int index = 0;
     private static final String DELIMITER = "\r";//null char, impossible char to type on keyboard
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static DateFormat storedFormat;
     private FusedLocationProviderClient fusedLocationClient;
     public static String PACKAGE_NAME;
-    private PhotoFactory factory = new PhotoFactory();
+    private static final PhotoFactory factory = new PhotoFactory();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
-            displayPhoto(photos.get(0).getPath());
+            displayPhoto(photos.get(0));
         }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     displayPhoto(null);
                 } else {
                     index = 0;
-                    displayPhoto(photos.get(index).getPath());
+                    displayPhoto(photos.get(index));
                 }
             }
         } catch (Exception e) {
@@ -139,18 +139,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         if (index != oldIndex) {
-            displayPhoto(photos.get(index).getPath());
+            displayPhoto(photos.get(index));
         }
     }
 
-    private void displayPhoto(String filepath) {
+    private void displayPhoto(Photo photo) {
         ImageView image = (ImageView) findViewById(R.id.galleryImage);
         TextView timestamp = (TextView) findViewById(R.id.imageTimestamp);
         EditText caption = (EditText) findViewById(R.id.editImageCaption);
         EditText lat = (EditText) findViewById(R.id.latitudeDisplay);
         EditText lon = (EditText) findViewById(R.id.longitudeDisplay);
 
-        if (filepath == null || filepath.length() == 0) {
+        if (photo == null || photo.getPath().length() == 0) {
             image.setImageResource(R.mipmap.ic_launcher_round);
             image.setContentDescription("ic_launcher_round");
             caption.setText("");
@@ -158,23 +158,13 @@ public class MainActivity extends AppCompatActivity {
             lat.setText("");
             lon.setText("");
         } else {
+            String filepath = photo.getPath();
             image.setImageBitmap(getOptimizedBitmap(filepath));
             image.setContentDescription(filepath);
-            String[] photoData = filepath.split(DELIMITER);
-            caption.setText(photoData[CAPTION_INDEX]);
-            String timestampTxt = photoData[TIMESTAMP_INDEX];
-            try {
-                timestampTxt = displayFormat.format(storedFormat.parse(timestampTxt));
-            } catch (ParseException e) {
-            }
-            timestamp.setText(timestampTxt);
-            if (photoData.length == MISSING_LATLON) {
-                lat.setText("");
-                lon.setText("");
-            } else {
-                lon.setText(photoData[LON_INDEX]);
-                lat.setText(photoData[LAT_INDEX]);
-            }
+            caption.setText(photo.getCaption());
+            timestamp.setText(displayFormat.format(photo.getTimestamp()));
+            lat.setText(Float.toString(photo.getLatitude()));
+            lon.setText(Float.toString(photo.getLongitude()));
         }
     }
 
@@ -241,16 +231,16 @@ public class MainActivity extends AppCompatActivity {
             index = 0;
             photos = factory.getPhotos(keywords, startTimestamp, endTimestamp, lon, lat);
 
-            displayPhoto(photos.size() == 0 ? null : photos.get(index).getPath());
+            displayPhoto(photos.size() == 0 ? null : photos.get(index));
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             float lon = tryGetFromViewId(R.id.longitudeDisplay);
             float lat = tryGetFromViewId(R.id.latitudeDisplay);
             //rename the new file to have lat lon value
-            currentPhotoPath = updatePhoto(currentPhotoPath, "caption", lon, lat);
+            currentPhoto = updatePhoto(currentPhoto, "caption", lon, lat);
 
             photos = factory.getPhotos(null, null, null, 0, 0);
-            displayPhoto(currentPhotoPath);
+            displayPhoto(currentPhoto);
         }
     }
 
@@ -259,21 +249,17 @@ public class MainActivity extends AppCompatActivity {
             String captions = ((EditText) findViewById(R.id.editImageCaption)).getText().toString();
             float lon = tryGetFromViewId(R.id.longitudeDisplay);
             float lat = tryGetFromViewId(R.id.latitudeDisplay);
-            updatePhoto(photos.get(index).getPath(), captions, lon, lat);
+            updatePhoto(photos.get(index), captions, lon, lat);
             Toast.makeText(getApplicationContext(), "File saved", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private String updatePhoto(String filepath, String caption, Float lon, Float lat) {
-        //we dont care if the original photo had lat lon, we can add that info now
-        String[] data = filepath.split(DELIMITER);
-        File from = new File(filepath);
-        File to = new File(data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + lon + DELIMITER + lat + DELIMITER + data[data.length - 1]);
-        boolean success = from.renameTo(to);
-        if (success && photos.size() > 0) {
-            photos = factory.getPhotos();
-        }
-        return success ? to.getAbsolutePath() : filepath;
+    private Photo updatePhoto(Photo photo, String caption, Float lon, Float lat) {
+        photo.setCaption(caption);
+        photo.setLatitude(lat);
+        photo.setLongitude(lon);
+        photo.Save();
+        return photo; //success ? to.getAbsolutePath() : filepath;
     }
 
     @SuppressLint("MissingPermission")
@@ -316,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
+        currentPhoto = factory.getPhoto(image.getPath());
         return image;
     }
 

@@ -13,4 +13,6 @@ public interface Photo {
     void setTimestamp(Date timestamp);
     void setLongitude(float lon);
     void setLatitude(float lat);
+
+    void Save();
 }
