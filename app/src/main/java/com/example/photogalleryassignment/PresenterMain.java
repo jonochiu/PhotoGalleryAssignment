@@ -39,10 +39,10 @@ import java.util.Locale;
 
 public class PresenterMain {
     MainActivity view;
-    private ModelPhoto model;
-    private List<String> photos;
+    private PhotoFactory factory;
+    private List<Photo> photos;
     private int index = 0;
-
+    private Photo currentPhoto = null;
 
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
@@ -61,16 +61,11 @@ public class PresenterMain {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1252;
 
-
     public static boolean locationPermGranted = false;
     private FusedLocationProviderClient fusedLocationClient;
 
-
-
-    private String currentPhotoPath = null;
-
-    public PresenterMain(ModelPhoto model) {
-        this.model = model;
+    public PresenterMain(PhotoFactory factory) {
+        this.factory = factory;
     }
 
     public void bind(MainActivity view) {
@@ -85,12 +80,12 @@ public class PresenterMain {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(view); //need to add this to presentermain
         displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         storedFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-        photos = model.findPhotos(view, new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
 
+        photos = factory.getPhotos();
         if (photos.size() == 0) {
             displayPhoto(null);
         } else {
-            displayPhoto(photos.get(index));
+            displayPhoto(photos.get(0));
         }
 
         if (ActivityCompat.checkSelfPermission(view, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -99,17 +94,22 @@ public class PresenterMain {
             }
             //permission denied && SDK < 23, not sure wat to do in this case
         } else {
-            locationPermGranted = true; //need function to set presentermain location to true
-            //presenter.setLocationPermGranted();
+            locationPermGranted = true;
         }
     }
 
+    private float tryGetFromViewId(int id) {
+        try {
+            return Float.parseFloat(((EditText) view.findViewById(id)).getText().toString());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     public void delete() {
         try {
-            //add code to access model to delete
-            File imagePath = new File(photos.get(index));
-            if(imagePath.delete()) {
+            File imagePath = new File(photos.get(index).getPath());
+            if (imagePath.delete()) {
                 Toast.makeText(view, "Deleted the file: " + imagePath.getName(), Toast.LENGTH_LONG).show();
                 photos.remove(index);
                 if (photos.size() == 0) {
@@ -119,11 +119,8 @@ public class PresenterMain {
                     displayPhoto(photos.get(index));
                 }
             }
-            //block to put into modelphotoimpl
-
-
         } catch (Exception e) {
-            Log.e("DeletePhoto","threw:",e);
+            Log.e("DeletePhoto", "threw:", e);
             Toast.makeText(view, "No photos to delete", Toast.LENGTH_LONG).show();
         }
     }
@@ -133,7 +130,6 @@ public class PresenterMain {
            // return index; //fix here
         }
         int oldIndex = index;
-        System.out.println(view.getId());
         switch (view.getId()) {
             case R.id.navLeftBtn:
                 if (index > 0) {
@@ -151,12 +147,11 @@ public class PresenterMain {
         if (index != oldIndex) {
             displayPhoto(photos.get(index));
         }
-        //return index; //fix here
     }
 
     public void blog() {
         //twitter
-        Uri photo = Uri.parse(photos.get(index));
+        Uri photo = Uri.parse(photos.get(index).getPath());
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, photo);
@@ -164,46 +159,36 @@ public class PresenterMain {
         view.startActivity(Intent.createChooser(shareIntent, "Share your thoughts"));
     }
 
-    private void displayPhoto(String filepath) {
-        ImageView imageview = (ImageView) view.findViewById(R.id.galleryImage);
+    private void displayPhoto(Photo photo) {
+        ImageView image = (ImageView) view.findViewById(R.id.galleryImage);
         TextView timestamp = (TextView) view.findViewById(R.id.imageTimestamp);
         EditText caption = (EditText) view.findViewById(R.id.editImageCaption);
         EditText lat = (EditText) view.findViewById(R.id.latitudeDisplay);
         EditText lon = (EditText) view.findViewById(R.id.longitudeDisplay);
 
-        if (filepath == null || filepath.length() == 0) {
-            imageview.setImageResource(R.mipmap.ic_launcher_round);
-            imageview.setContentDescription("ic_launcher_round");
+        if (photo == null || photo.getPath().length() == 0) {
+            image.setImageResource(R.mipmap.ic_launcher_round);
+            image.setContentDescription("ic_launcher_round");
             caption.setText("");
             timestamp.setText("");
             lat.setText("");
             lon.setText("");
         } else {
-            imageview.setImageBitmap(getOptimizedBitmap(filepath));
-            imageview.setContentDescription(filepath);
-            String[] photoData = filepath.split(DELIMITER);
-            caption.setText(photoData[CAPTION_INDEX]);
-            String timestampTxt = photoData[TIMESTAMP_INDEX];
-            try {
-                timestampTxt = displayFormat.format(storedFormat.parse(timestampTxt));
-            } catch (ParseException e) {
-            }
-            timestamp.setText(timestampTxt);
-            if ( photoData.length == MISSING_LATLON) {
-                lat.setText("");
-                lon.setText("");
-            } else {
-                lon.setText(photoData[LON_INDEX]);
-                lat.setText(photoData[LAT_INDEX]);
-            }
+            String filepath = photo.getPath();
+            image.setImageBitmap(getOptimizedBitmap(filepath));
+            image.setContentDescription(filepath);
+            caption.setText(photo.getCaption());
+            timestamp.setText(displayFormat.format(photo.getTimestamp()));
+            lat.setText(Float.toString(photo.getLatitude()));
+            lon.setText(Float.toString(photo.getLongitude()));
         }
     }
 
     public void  saveCaption() {
         if (photos.size() > 0) {
             String captions = ((EditText) view.findViewById(R.id.editImageCaption)).getText().toString();
-            String lon = ((EditText) view.findViewById(R.id.longitudeDisplay)).getText().toString();
-            String lat = ((EditText) view.findViewById(R.id.latitudeDisplay)).getText().toString();
+            float lon = tryGetFromViewId(R.id.longitudeDisplay);
+            float lat = tryGetFromViewId(R.id.latitudeDisplay);
             updatePhoto(photos.get(index), captions, lon, lat);
             Toast.makeText(view.getApplicationContext(), "File saved", Toast.LENGTH_SHORT).show();
         }
@@ -235,14 +220,13 @@ public class PresenterMain {
     }
 
     public void takePictureResponse() {
-        String longitude = ((EditText)view.findViewById(R.id.longitudeDisplay)).getText().toString();
-        String latitude = ((EditText)view.findViewById(R.id.latitudeDisplay)).getText().toString();
+        float lon = tryGetFromViewId(R.id.longitudeDisplay);
+        float lat = tryGetFromViewId(R.id.latitudeDisplay);
         //rename the new file to have lat lon value
-        currentPhotoPath = updatePhoto(currentPhotoPath, "caption", longitude, latitude);
+        currentPhoto = updatePhoto(currentPhoto, "caption", lon, lat);
 
-        //photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
-        photos = model.findPhotos(view, new Date(Long.MIN_VALUE), new Date(), "", 0, 0);
-        displayPhoto(currentPhotoPath);
+        photos = factory.getPhotos(null, null, null, 0, 0);
+        displayPhoto(currentPhoto);
     }
 
     public void search() {
@@ -253,21 +237,21 @@ public class PresenterMain {
     public void searchResponse(Intent data) {
         DateFormat format = displayFormat;
         Date startTimestamp, endTimestamp;
-        int lon = data.getIntExtra("LONGITUDE", 0);
-        int lat = data.getIntExtra("LATITUDE", 0);
-        String from = (String) data.getStringExtra("STARTTIMESTAMP");
-        String to = (String) data.getStringExtra("ENDTIMESTAMP");
+        float lon = data.getFloatExtra("LONGITUDE", 0);
+        float lat = data.getFloatExtra("LATITUDE", 0);
+        String from = data.getStringExtra("STARTTIMESTAMP");
+        String to = data.getStringExtra("ENDTIMESTAMP");
         try {
             startTimestamp = format.parse(from);
             endTimestamp = format.parse(to);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        String keywords = (String) data.getStringExtra("KEYWORDS");
+        String keywords = data.getStringExtra("KEYWORDS");
         index = 0;
-        photos = model.findPhotos(view, startTimestamp, endTimestamp, keywords, lon, lat); //refresh with photos array with the searched photos
+        photos = factory.getPhotos(keywords, startTimestamp, endTimestamp, lon, lat);
 
-        displayPhoto(photos.size() == 0 ? null : photos.get(index)); //display the first photo
+        displayPhoto(photos.size() == 0 ? null : photos.get(index));
     }
 
     public void locPermGranted() {
@@ -298,18 +282,13 @@ public class PresenterMain {
         Log.d("Photo", "location complete");
     }
 
-    private String updatePhoto(String filepath, String caption, String lon, String lat) {
-        //we dont care if the original photo had lat lon, we can add that info now
-        lon = lon.trim();
-        lat = lat.trim();
-        String[] data = filepath.split(DELIMITER);
-        File from = new File(filepath);
-        File to = new File(data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + lon + DELIMITER + lat+ DELIMITER + data[data.length-1]);
-        boolean success = from.renameTo(to);
-        if (success && photos.size() > 0) {
-            photos.set(index, to.getAbsolutePath());
-        }
-        return success ? to.getAbsolutePath() : filepath;
+    private Photo updatePhoto(Photo photo, String caption, Float lon, Float lat) {
+
+        photo.setCaption(caption);
+        photo.setLatitude(lat);
+        photo.setLongitude(lon);
+        photo.Save();
+        return photo; //success ? to.getAbsolutePath() : filepath;
     }
 
     private File createImageFile() throws IOException {
@@ -328,7 +307,7 @@ public class PresenterMain {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
+        currentPhoto = factory.getPhoto(image.getPath());
         return image;
     }
 

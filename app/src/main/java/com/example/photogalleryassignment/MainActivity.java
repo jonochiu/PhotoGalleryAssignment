@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements ViewMain{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ModelPhoto model = new ModelPhotoImpl();
-        presenter = new PresenterMain(model);
+        PhotoFactory factory = new PhotoFactory(getApplicationContext().getPackageName());
+        presenter = new PresenterMain(factory);
         presenter.bind(this);
         presenter.ready();
     }
