@@ -73,7 +73,7 @@ public class PhotoEntry implements Photo {
 
     @Override
     public void Save() {
-        String[] data = filepath.split(absolutePath);
+        String[] data = filepath.split(DELIMITER);
         String newpath = data[SYS_PATH_INDEX] + DELIMITER + caption + DELIMITER + data[TIMESTAMP_INDEX] + DELIMITER + longitude + DELIMITER + latitude + DELIMITER + data[data.length - 1];
         File target = new File(newpath);
         new File(filepath).renameTo(target);

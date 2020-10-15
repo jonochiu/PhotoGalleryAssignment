@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.common.util.Strings;
@@ -47,8 +48,8 @@ public class PhotoFactory {
     }
 
     @SuppressLint("NewApi")
-    public Photo getPhoto(String path) {
-        return firstOrDefault(getPhotos().stream(), null, item -> item.getPath() == path);
+    public Photo getPhoto(@NonNull String path) {
+        return firstOrDefault(getPhotos().stream(), null, item -> path.equals(item.getPath()) );
     }
 
     @SuppressLint("NewApi")
