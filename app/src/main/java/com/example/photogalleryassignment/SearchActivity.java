@@ -26,7 +26,7 @@ import java.util.Locale;
 public class SearchActivity extends AppCompatActivity {
 
     //Date Selector Code
-    private static DateFormat displayFormat = MainActivity.displayFormat;
+    private static DateFormat displayFormat = MainActivity.presenter.getDisplayFormat();
 
     private EditText startDateDispl;
     private EditText endDateDispl;
