@@ -80,7 +80,7 @@
      android:layout_alignTop="@id/longitudeLabel"
      android:gravity="center_vertical"
      android:ems="10"
-     android:inputType="numberSigned"
+     android:inputType="numberDecimal|numberSigned"
      android:textSize="24sp" />
     <TextView
      android:id="@+id/latitudeLabel"
@@ -96,7 +96,7 @@
      android:layout_alignLeft="@+id/go"
      android:layout_alignTop="@id/latitudeLabel"
      android:ems="10"
-     android:inputType="numberSigned"
+     android:inputType="numberDecimal|numberSigned"
      android:textSize="24sp" />
     <Button
      android:id="@+id/btnCancel"
